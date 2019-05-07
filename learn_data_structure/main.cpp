@@ -1,20 +1,59 @@
 // learn_data_structure.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-
+#include "MyRBTree.h"
 #include <iostream>
+#include <ctime>
+#include <cstdlib>
+
 
 int main()
 {
-    std::cout << "Hello World!\n"; 
+	//std::cout << "Hello World" << std::endl;
+	srand(time(0));
+
+	MyRBTree tree;
+
+	for (int i = 100; i > 0; --i)
+	{
+		int n = rand() % 100;
+		//std::cout << n << " ";
+		tree.insert(n);
+	}
+
+
+
+	//tree.insert(7);
+	//tree.insert(3);
+	//tree.insert(18);
+	//tree.insert(10);
+	//tree.insert(22);
+	//tree.printRecurce();
+	//tree.insert(8);
+	//tree.insert(11);
+	//tree.insert(26);
+	//tree.insert(2);
+	//tree.printRecurce();
+	//tree.insert(6);
+	//tree.printRecurce();
+	//tree.insert(13);
+	//std::cout << std::endl;
+	tree.printRecurce();
+
+	//std::cout << std::endl << "Deleting 18, 11, 3, 10, 22" << std::endl;
+
+	/*tree.remove(18);
+	tree.printRecurce();
+
+	tree.remove(11);
+	tree.printRecurce();
+
+	tree.remove(3);
+	tree.printRecurce();
+
+	tree.remove(10);
+	tree.printRecurce();
+
+	tree.remove(22);
+	tree.printRecurce();*/
+	return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

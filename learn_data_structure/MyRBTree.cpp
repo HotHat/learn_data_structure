@@ -461,6 +461,7 @@ void MyRBTree::fixRemove(Node * node)
 			{
 				rightRotate(sibling->parent);
 			}
+			swapColor(sibling, sibling->parent);
 		}
 
 	}

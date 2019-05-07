@@ -422,12 +422,14 @@ void MyRBTree::fixRemove(Node * node)
 				// Left Left
 				if (sibling->isLeft())
 				{
+					sibling->left->color = Color::RED;
 					rightRotate(point->parent);
 					removeNode(point);
 				}
 				// Left right
 				else
 				{
+					swapColor(sibling, sibling->left);
 					leftRotate(sibling);
 					rightRotate(point->parent);
 					removeNode(point);
@@ -439,12 +441,14 @@ void MyRBTree::fixRemove(Node * node)
 				// right right
 				if (!sibling->isLeft())
 				{
-					rightRotate(point->parent);
+					sibling->right->color = Color::BLACK;
+					leftRotate(point->parent);
 					removeNode(point);
 				}
 				// right left
 				else
 				{
+					swapColor(sibling, sibling->right);
 					leftRotate(sibling);
 					rightRotate(point->parent);
 					removeNode(point);

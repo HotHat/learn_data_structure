@@ -13,35 +13,35 @@ int main()
 
 	MyRBTree tree;
 
-	for (int i = 100; i > 0; --i)
-	{
-		int n = rand() % 100;
-		//std::cout << n << " ";
-		tree.insert(n);
-	}
+	//for (int i = 100; i > 0; --i)
+	//{
+	//	int n = rand() % 100;
+	//	//std::cout << n << " ";
+	//	tree.insert(n);
+	//}
 
 
 
-	//tree.insert(7);
-	//tree.insert(3);
-	//tree.insert(18);
-	//tree.insert(10);
-	//tree.insert(22);
+	tree.insert(7);
+	tree.insert(3);
+	tree.insert(18);
+	tree.insert(10);
+	tree.insert(22);
 	//tree.printRecurce();
-	//tree.insert(8);
-	//tree.insert(11);
-	//tree.insert(26);
-	//tree.insert(2);
+	tree.insert(8);
+	tree.insert(11);
+	tree.insert(26);
+	tree.insert(2);
 	//tree.printRecurce();
-	//tree.insert(6);
+	tree.insert(6);
 	//tree.printRecurce();
-	//tree.insert(13);
-	//std::cout << std::endl;
-	tree.printRecurce();
+	tree.insert(13);
+	std::cout << std::endl;
+	//tree.printRecurce();
 
 	//std::cout << std::endl << "Deleting 18, 11, 3, 10, 22" << std::endl;
 
-	/*tree.remove(18);
+	tree.remove(18);
 	tree.printRecurce();
 
 	tree.remove(11);
@@ -54,6 +54,6 @@ int main()
 	tree.printRecurce();
 
 	tree.remove(22);
-	tree.printRecurce();*/
+	tree.printRecurce();
 	return 0;
 }

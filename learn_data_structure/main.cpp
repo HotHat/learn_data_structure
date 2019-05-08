@@ -25,7 +25,7 @@ int main()
 		}
 		std::cout << std::endl;
 
-		tree.printRecurce();
+		tree.printRecursive();
 		//tree.remove(10000);
 		int n = q.size() / 2;
 		for (int i = 0; i < n; ++i)
@@ -34,7 +34,7 @@ int main()
 			q.pop();
 			std::cout << "delete: " << p << std::endl;
 			tree.remove(p);
-			tree.printRecurce();
+			tree.printRecursive();
 		}
 	}
 

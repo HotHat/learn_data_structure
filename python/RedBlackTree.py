@@ -25,6 +25,9 @@ class Node:
         assert(self.parent is not None)
         return self.parent.left == self
 
+    def is_leaf(self):
+        return self.left is None and self.right is None
+
     def sibling(self):
         assert(self.parent is not None)
         if self.is_left():
@@ -58,11 +61,37 @@ class RedBlackTree:
         new.parent = n
         self.__fix_rotate(new)
 
-    def remove(self):
-        pass
+    def remove(self, value):
+        v = self.find(value)
 
-    def find(self):
-        pass
+        while v is not None:
+            if v.is_leaf():
+                self.__fix_remove(v)
+                return
+            else:
+                u = self.__successor(v)
+
+                if u is not None:
+                    self.__swap_value(v, u)
+                    if u.is_leaf():
+                        self.__fix_remove(u)
+                        return
+                    else:
+                        v = u
+                else:
+                    self.__swap_value(v, v.left)
+                    v = v.left
+
+    def find(self, value):
+        p = self.root
+        while p is not None:
+            if p.value == value:
+                return p
+            if p.value > value:
+                p = p.left
+            else:
+                p = p.right
+        return p
 
     def print(self):
         print("strict digraph Tree {")
@@ -71,12 +100,30 @@ class RedBlackTree:
         self.__recursive(q)
         print("}")
 
+    @staticmethod
+    def __successor(node):
+        s = node.right
+        while s is not None and s.left is not None:
+            s = s.left
+        return s
+
+    @staticmethod
+    def __remove_node(node):
+        assert node is not None
+        if node.parent is None:
+            del node
+            return
+        if node.is_left():
+            node.parent.left = None
+        else:
+            node.parent.right = None
+        del node
+
     def __recursive(self, q):
         p = Queue()
 
         while not q.empty():
             current = q.get()
-
             if current is None:
                 return
 
@@ -195,10 +242,10 @@ class RedBlackTree:
                         self.__swap_color(point.parent, point)
                         self.__right_rotate(point.parent)
 
-
                 return
 
-    def __swap_color(self, l, r):
+    @staticmethod
+    def __swap_color(l, r):
         assert (l is not None)
         assert (r is not None)
         tmp = l.color
@@ -206,15 +253,96 @@ class RedBlackTree:
         r.color = tmp
 
     def __fix_remove(self, node):
-        pass
+        if node is self.root:
+            self.root = None
+            self.__remove_node(node)
+            return
+
+        if node.color == Color.RED:
+            self.__remove_node(node)
+            return
+
+        point = node
+        while point is not self.root:
+            sibling = point.sibling()
+            if sibling.color == Color.BLACK:
+                if (sibling.left is None or sibling.left.color == Color.BLACK) and (
+                        sibling.right is None or sibling.right.color == Color.BLACK):
+                    parent = sibling.parent
+                    if parent.color == Color.RED:
+                        parent.color = Color.BLACK
+                        sibling.color = Color.RED
+                        break
+                    else:
+                        sibling.color = Color.RED
+                        parent.color = Color.BLACK
+                        point = parent
+                if sibling.left is not None and sibling.left.color == Color.RED:
+                    if sibling.is_left():
+                        sibling.left.color = Color.BLACK
+                        self.__swap_color(sibling, sibling.parent)
+                        self.__right_rotate(point.parent)
+                    else:
+                        self.__swap_color(sibling, sibling.left)
+                        self.__right_rotate(sibling)
+                        s = point.sibling()
+                        s.right.color = Color.BLACK
+                        self.__swap_color(s, s.parent)
+                        self.__left_rotate(s.parent)
+                    break
+                if sibling.right is not None and sibling.right.color == Color.RED:
+                    if not sibling.is_left():
+                        sibling.right.color = Color.BLACK
+                        self.__swap_color(sibling, sibling.parent)
+                        self.__left_rotate(sibling.parent)
+                    else:
+                        self.__swap_color(sibling, sibling.right)
+                        self.__left_rotate(sibling)
+                        s = point.sibling()
+                        s.left.color = Color.BLACK
+                        self.__swap_color(s, s.parent)
+                        self.__right_rotate(s.parent)
+                    break
+            else:
+                self.__swap_color(sibling, sibling.parent)
+                if sibling.is_left():
+                    self.__right_rotate(sibling.parent)
+                else:
+                    self.__left_rotate(sibling.parent)
+
+        self.__remove_node(node)
+
+    @staticmethod
+    def __swap_value(l, r):
+        assert(l is not None)
+        assert(r is not None)
+        tmp = l.value
+        l.value = r.value
+        r.value = tmp
 
 
 if __name__ == "__main__":
     tree = RedBlackTree()
+    q = Queue()
+    # for i in range(10, 0, -1):
+    #     n = randint(1, 100)
+    #     q.put(n)
+    #     print("%d, " % n, end=" ")
+    #     tree.insert(n)
+    #
+    # print()
+    arr = [53,  83,  48,  100,  28,  86,  21,  59,  2,  72]
+    for i in arr:
+        q.put(i)
+        tree.insert(i)
+    tree.print()
+    print("Begin Remove Item: ")
+    while not q.empty():
+        p = q.get()
+        print("delete %d" % p)
+        tree.remove(p)
+        tree.print()
 
-    for i in range(100, 0, -1):
-        n = randint(1, 100)
-        tree.insert(n)
     # tree.insert(7)
     # tree.insert(3)
     # tree.insert(18)
@@ -226,6 +354,15 @@ if __name__ == "__main__":
     # tree.insert(2)
     # tree.insert(6)
     # tree.insert(13)
-    
-    tree.print()
-
+    #
+    # tree.print()
+    # tree.remove(18)
+    # tree.print()
+    # tree.remove(11)
+    # tree.print()
+    # tree.remove(3)
+    # tree.print()
+    # tree.remove(10)
+    # tree.print()
+    # tree.remove(22)
+    # tree.print()

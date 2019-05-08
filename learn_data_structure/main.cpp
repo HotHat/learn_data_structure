@@ -46,54 +46,7 @@ int main()
 	//}
 
 	//tree.printRecurce();
-	//tree.remove(99);
-	//tree.remove(91);
-	//tree.remove(85);
-	//tree.remove(92);
-	//tree.remove(96);
-	////tree.printRecurce();
-	//tree.remove(48);
-	////tree.printRecurce();
-	//tree.remove(71);
-	////tree.printRecurce();
-	//tree.remove(44);
-	//tree.remove(79);
-	//tree.remove(28);
-	//tree.remove(82);
-	//tree.remove(32);
-	//tree.remove(64);
-	//tree.remove(10);
-	//tree.remove(99);
-	//tree.remove(51);
-	//tree.remove(50);
-	//tree.remove(53);
-	//tree.remove(50);
-	//tree.remove(1);
-	//tree.printRecurce();
-	//tree.remove(23);
-	//tree.printRecurce();
-	//tree.insert(98);
-	//tree.insert(99);
-	//tree.insert(64);
-	//tree.insert(49);
-	//tree.insert(55);
-	//tree.insert(38);
-	//tree.insert(84);
-	//tree.insert(26);
-	//tree.insert(25);
-	//tree.insert(7);
-	//tree.insert(5);
-	//tree.insert(52);
-	//tree.insert(46);
-	//tree.insert(58);
-	//tree.insert(86);
-	//tree.insert(74);
-	//tree.insert(46);
-	//tree.insert(33);
-	//tree.insert(68);
-	//tree.insert(2);
-
-	//tree.remove(98);
+	
 
 	return 0;
 }

@@ -11,6 +11,25 @@ MyRBTree::MyRBTree()
 
 MyRBTree::~MyRBTree()
 {
+	if (root == nullptr)
+		return;
+
+	std::queue<Node *> q;
+	Node *curr;
+
+	q.push(root);
+
+	while (!q.empty()) {
+		// dequeue 
+		curr = q.front();
+		q.pop();
+
+		if (curr->left != nullptr)
+			q.push(curr->left);
+		if (curr->right != nullptr)
+			q.push(curr->right);
+	}
+	std::cout << "It's clean" << std::endl;
 }
 
 

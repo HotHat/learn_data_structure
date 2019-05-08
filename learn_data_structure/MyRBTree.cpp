@@ -189,7 +189,6 @@ void MyRBTree::remove(int val)
 		if (v->isLeaf())
 		{
 			fixRemove(v);
-			delete v;
 			return;
 		}
 		else
@@ -202,7 +201,6 @@ void MyRBTree::remove(int val)
 
 				if (u->isLeaf()) {
 					fixRemove(u);
-					delete u;
 					return;
 				}
 				else
@@ -210,9 +208,10 @@ void MyRBTree::remove(int val)
 					v = u;
 				}
 			}
+			// left child not null and change
 			else {
-				swapValue(u, v);
-				v = u;
+				swapValue(v, v->left);
+				v = v->left;
 			}
 		}
 
@@ -333,6 +332,9 @@ void MyRBTree::printRecurce(std::queue<Node*> q)
 		curr = q.front();
 		q.pop();
 
+		// empty tree
+		if (curr == nullptr) return;
+
 		// print node value 
 		std::cout << "	" << curr->val << "[";
 
@@ -382,6 +384,7 @@ void MyRBTree::fixRemove(Node * node)
 	if (node == root)
 	{
 		root = nullptr;
+		removeNode(node);
 		return;
 	}
 
@@ -399,19 +402,19 @@ void MyRBTree::fixRemove(Node * node)
 		if (sibling->color == Color::BLACK)
 		{
 			// sibling has two black children
-			if ((sibling->left == nullptr && sibling->right == nullptr) ||
-				(sibling->left->color == Color::BLACK && sibling->right->color == Color::BLACK))
+			if ((sibling->left == nullptr || sibling->left->color == Color::BLACK) && 
+				(sibling->right == nullptr || sibling->right->color == Color::BLACK))
 			{
 				if (sibling->parent->color == Color::RED)
 				{
-					flipColor(sibling->parent);
-					flipColor(sibling);
-					removeNode(point);
-					return;
+					sibling->parent->color = Color::BLACK;
+					sibling->color = Color::RED;
+					break;
 				}
 				else
 				{
-					flipColor(sibling);
+					sibling->color = Color::RED;
+					sibling->parent->color = Color::BLACK;
 					// TODO: Continue with parent
 					point = sibling->parent;
 				}
@@ -419,64 +422,89 @@ void MyRBTree::fixRemove(Node * node)
 			// sibling has a lease one red chidren
 			if (sibling->left != nullptr && sibling->left->color == Color::RED)
 			{
-				// Left Left
+			// Left Left
 				if (sibling->isLeft())
 				{
-					sibling->left->color = Color::RED;
+					sibling->left->color = Color::BLACK;
+					swapColor(sibling, sibling->parent);
+	
 					rightRotate(point->parent);
-					removeNode(point);
 				}
 				// Left right
 				else
 				{
 					swapColor(sibling, sibling->left);
-					leftRotate(sibling);
-					rightRotate(point->parent);
-					removeNode(point);
+					rightRotate(sibling);
+
+					Node *s = point->sibling();
+					s->right->color = Color::BLACK;
+					swapColor(s, s->parent);
+					
+					leftRotate(point->parent);
 				}
+
+				break;
 			}
 
 			if (sibling->right != nullptr && sibling->right->color == Color::RED)
 			{
+				
 				// right right
 				if (!sibling->isLeft())
 				{
 					sibling->right->color = Color::BLACK;
+					swapColor(sibling, sibling->parent);
+
 					leftRotate(point->parent);
-					removeNode(point);
 				}
 				// right left
 				else
 				{
 					swapColor(sibling, sibling->right);
 					leftRotate(sibling);
+
+					Node *s = point->sibling();
+					s->left->color = Color::BLACK;
+					swapColor(s, s->parent);
 					rightRotate(point->parent);
-					removeNode(point);
 				}
+				break;
 			}
 		}
 		else
 		{
+
+			swapColor(sibling->parent, sibling);
+
 			if (sibling->isLeft())
-			{
-				leftRotate(sibling->parent);
-			}
-			else
 			{
 				rightRotate(sibling->parent);
 			}
-			swapColor(sibling, sibling->parent);
+			else
+			{
+				leftRotate(sibling->parent);
+			}
+
+
 		}
 
 	}
 
+
+	removeNode(node);
 	
 
 }
 
 void MyRBTree::removeNode(Node * node)
 {
-	assert(node != nullptr && node->parent != nullptr);
+	assert(node != nullptr);
+
+	if (node->parent == nullptr)
+	{
+		delete node;
+		return;
+	}
 
 	if (node->isLeft())
 	{
@@ -486,4 +514,6 @@ void MyRBTree::removeNode(Node * node)
 	{
 		node->parent->right = nullptr;
 	}
+		
+	delete node;
 }

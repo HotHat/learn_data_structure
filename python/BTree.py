@@ -2,6 +2,8 @@ from queue import Queue
 
 
 class BTreeNode:
+    serial_number = 1
+
     def __init__(self, t):
         self.degree = t
         self.n = 0
@@ -9,6 +11,8 @@ class BTreeNode:
         self.keys = [None] * t
         self.children = [None] * (t + 1)
         self.parent = None
+        self.sn = BTreeNode.serial_number
+        BTreeNode.serial_number += 1
 
     def is_full(self):
         return self.degree == self.n
@@ -55,9 +59,7 @@ class BTreeNode:
         return p
 
     def print(self):
-        tr = "node_"
-        for i in range(0, self.n):
-            tr += str(self.keys[i])
+        tr = "node_" + str(self.sn)
         tr += '[label=" '
         for i in range(0, self.n):
             tr += "<f%d>| <f%d>%d|" % (i*2, i*2+1, self.keys[i])
@@ -65,10 +67,7 @@ class BTreeNode:
         print('%s<f%d>"]' % (tr, self.n * 2))
 
     def name(self):
-        tr = "node_"
-        for i in range(0, self.n):
-            tr += str(self.keys[i])
-        return tr
+        return "node_" + str(self.sn)
 
 
 class BTree:
@@ -117,6 +116,7 @@ class BTree:
 
         q = Queue()
         q.put(self.root)
+
         while not q.empty():
             current = q.get()
             if current is None:
@@ -148,7 +148,7 @@ class BTree:
             middle = int(self.degree / 2) - 1
         else:
             middle = int(self.degree / 2)
-        node.n -= middle + 1
+        node.n = middle
 
         index = 0
         # middle_value = node.keys[middle]

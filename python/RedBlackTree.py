@@ -96,8 +96,26 @@ class RedBlackTree:
     def print(self):
         print("strict digraph Tree {")
         q = Queue()
+        if self.root is None:
+            return
         q.put(self.root)
-        self.__recursive(q)
+        while not q.empty():
+            current = q.get()
+            if current is None:
+                return
+
+            print(" %d[" % current.value, end="")
+            if current.color is Color.RED:
+                print("color=red]")
+            else:
+                print("color=black]")
+
+            if current.left is not None:
+                q.put(current.left)
+                print(" %d -> %d" % (current.value, current.left.value))
+            if current.right is not None:
+                q.put(current.right)
+                print(" %d -> %d" % (current.value, current.right.value))
         print("}")
 
     @staticmethod
@@ -324,17 +342,17 @@ class RedBlackTree:
 if __name__ == "__main__":
     tree = RedBlackTree()
     q = Queue()
-    # for i in range(10, 0, -1):
-    #     n = randint(1, 100)
-    #     q.put(n)
-    #     print("%d, " % n, end=" ")
-    #     tree.insert(n)
-    #
-    # print()
-    arr = [53,  83,  48,  100,  28,  86,  21,  59,  2,  72]
-    for i in arr:
-        q.put(i)
-        tree.insert(i)
+    for i in range(10, 0, -1):
+        n = randint(1, 100)
+        q.put(n)
+        print("%d, " % n, end=" ")
+        tree.insert(n)
+
+    print()
+    # arr = [1, 2, 2]
+    # for i in arr:
+    #     q.put(i)
+    #     tree.insert(i)
     tree.print()
     print("Begin Remove Item: ")
     while not q.empty():

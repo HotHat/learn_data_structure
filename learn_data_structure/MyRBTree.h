@@ -83,7 +83,6 @@ private:
 	void swapColor(Node *l, Node *r);
 	void swapValue(Node *l, Node *r);
 	void flipColor(Node *node);
-	void printRecursive(std::queue<Node *> q);
 	void fixRotate(Node *node);
 	void fixRemove(Node *node);
 

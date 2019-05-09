@@ -340,11 +340,16 @@ void MyRBTree::flipColor(Node * node)
 	}
 }
 
-void MyRBTree::printRecursive(std::queue<Node*> q)
-{
-	Node* curr;
-	std::queue<Node*> next;
 
+void MyRBTree::printRecursive()
+{
+	if (root == nullptr) return;
+
+	std::cout << "strict digraph REDBLACKTREE { " << std::endl;
+	Node* curr;
+	std::queue<Node*> q;
+
+	q.push(root);
 	while (!q.empty()) {
 		// while q is not empty 
 		// dequeue 
@@ -367,28 +372,16 @@ void MyRBTree::printRecursive(std::queue<Node*> q)
 		if (curr->left != NULL)
 		{
 			std::cout << "	" << curr->val << " -> " << curr->left->val << std::endl;
-			next.push(curr->left);
+			q.push(curr->left);
 		}
 		if (curr->right != NULL)
 		{
 			std::cout << "	" << curr->val << " -> " << curr->right->val << std::endl;
-			next.push(curr->right);
+			q.push(curr->right);
 		}
 
 	}
 	std::cout << std::endl;
-	if (!next.empty()) {
-		printRecursive(next);
-	}
-
-}
-
-void MyRBTree::printRecursive()
-{
-	std::cout << "strict digraph REDBLACKTREE { " << std::endl;
-	std::queue<Node*> q;
-	q.push(root);
-	printRecursive(q);
 
 	std::cout << "}" << std::endl;
 }

@@ -6,18 +6,15 @@
 
 int main()
 {
-    std::cout << "Hello World!\n"; 
 
+	//MyBTree<int> tree(3);
 
-	//tree.insert(120);
-	//tree.insert(100);
-	//tree.insert(50);
-
-	//int arr[] = { 100, 50, 30, 500, 600, 500, 200, 200, 150, 300, 550, 580, 5, 28, 922, 82, 68, 182, 832, 234 };
+	//int arr[] = { 86, 17, 14, 2, 23, 92, 29, 56, 88, 91, 38, 41, 2, 66, 12, 73, 66, 71, 17, 0 };
 	//int size = sizeof(arr) / sizeof(int);
 
 	//for (int i = 0; i < size; ++i)
 	//{
+	//	std::cout << "Add item: " << arr[i] << std::endl;
 	//	tree.insert(arr[i]);
 	//	tree.print();
 	//}
@@ -27,16 +24,17 @@ int main()
 	MyBTree<int> tree(3);
 	std::queue<int> q;
 
-	for (int i = 120; i > 0; --i)
+	for (int i = 200; i > 0; --i)
 	{
 		int n = rand() % 100;
-		std::cout << n << " ";
+		std::cout << n << ", ";
 		q.push(n);
 		tree.insert(n);
 	}
 	std::cout << std::endl;
-
 	tree.print();
+
+	//tree.print();
 	//tree.remove(10000);
 	//int n = q.size() / 2;
 	//for (int i = 0; i < n; ++i)

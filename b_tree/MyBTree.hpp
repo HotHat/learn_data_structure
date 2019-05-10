@@ -196,8 +196,8 @@ public:
 				}
 				else
 				{
-					parent->insert(value, p, right);
-					int idx = parent->findNext(mid);
+					parent->insert(mid, p, right);
+					int idx = parent->findNext(value);
 					p = parent->_children[idx];
 				}
 			}

@@ -1,28 +1,53 @@
 // b_tree.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-#include "MyBTree.h"
+#include "MyBTree.hpp"
 #include <iostream>
+#include <ctime>
 
 int main()
 {
     std::cout << "Hello World!\n"; 
 
-	MyBTree<int> tree(3);
 
-	tree.insert(120);
-	tree.insert(100);
-	tree.insert(50);
+	//tree.insert(120);
+	//tree.insert(100);
+	//tree.insert(50);
+
+	//int arr[] = { 100, 50, 30, 500, 600, 500, 200, 200, 150, 300, 550, 580, 5, 28, 922, 82, 68, 182, 832, 234 };
+	//int size = sizeof(arr) / sizeof(int);
+
+	//for (int i = 0; i < size; ++i)
+	//{
+	//	tree.insert(arr[i]);
+	//	tree.print();
+	//}
+	srand(time((time_t)0));
+	
+
+	MyBTree<int> tree(3);
+	std::queue<int> q;
+
+	for (int i = 120; i > 0; --i)
+	{
+		int n = rand() % 100;
+		std::cout << n << " ";
+		q.push(n);
+		tree.insert(n);
+	}
+	std::cout << std::endl;
+
+	tree.print();
+	//tree.remove(10000);
+	//int n = q.size() / 2;
+	//for (int i = 0; i < n; ++i)
+	//{
+	//	int p = q.front();
+	//	q.pop();
+	//	std::cout << "delete: " << p << std::endl;
+	//	tree.remove(p);
+	//	tree.print();
+	//}
+
 
 
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

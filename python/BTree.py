@@ -98,7 +98,12 @@ class BTreeNode:
     def is_low(self):
         """ the node capacity(n) is less the degree/2 (if degree is even, less then degree/2-1)"""
         mid = self.__middle()
-        return self.n <= mid
+        return self.n < mid
+
+    def is_enough(self):
+        """ the node capacity(n) is node borrow to sibling"""
+        mid = self.__middle()
+        return self.n > mid
 
     def left_sibling(self):
         assert (self.parent is not None), "parent must not be none"
@@ -131,8 +136,8 @@ class BTreeNode:
         for i in range(pos, self.n):
             self.keys[i+1] = self.keys[i]
         if not self.is_leaf():
-            for i in range(pos, self.n):
-                self.children[i+1] = self.children[i]
+            for i in range(self.n+1, 0, -1):
+                self.children[i] = self.children[i-1]
         self.n += 1
 
     def __middle(self):
@@ -281,10 +286,10 @@ class BTree:
             left_node.n += 1
         if not left_node.is_leaf() and not right_node.is_leaf():
             for i in range(0, right_node.n+1):
-                left_node.children[left_node.n + 1] = right_node.childern[i]
-        left = parent_node.children[0]
+                left_node.children[left_node.n + 1] = right_node.children[i]
+        left = parent_node.children[parent_pos]
         parent_node.backward(parent_pos)
-        parent_node.children[0] = left
+        parent_node.children[parent_pos] = left
         del right_node
         # if parent_node.is_low():
         #     parent_pos = parent_node.parent.find_next(parent_node.keys[0])
@@ -292,47 +297,53 @@ class BTree:
 
     def fix_remove(self, node, value):
         while node is not self.root:
-            if node is self.root and node.n == 0:
-                self.root = None
-                return
-
             if node is self.root or not node.is_low():
                 return
 
             left_sibling = node.left_sibling()
-            if left_sibling is not None and not left_sibling.is_low():
+            if left_sibling is not None and left_sibling.is_enough():
                 # change value
                 parent = node.parent
                 parent_pos = parent.find_next(value) - 1
+                node.forward(0)
                 if not node.is_leaf():
                     node.children[0] = left_sibling.children[left_sibling.n]
-                node.forward(0)
+                    node.children[0].parent = node
                 node.keys[0] = parent.keys[parent_pos]
                 parent.keys[parent_pos] = left_sibling.keys[left_sibling.n - 1]
                 left_sibling.keys[left_sibling.n - 1] = None
                 left_sibling.n -= 1
                 return
             right_sibling = node.right_sibling()
-            if right_sibling is not None and not right_sibling.is_low():
+            if right_sibling is not None and right_sibling.is_enough():
                 # change value
                 parent = node.parent
                 parent_pos = parent.child_pos(node)
                 node.keys[node.n] = parent.keys[parent_pos]
                 node.n += 1
                 parent.keys[parent_pos] = right_sibling.keys[0]
+                right_sibling.backward(0)
                 if not node.is_leaf():
                     node.children[node.n] = right_sibling.children[0]
-                right_sibling.backward(0)
-
+                    node.children[node.n].parent = node
                 return
             # left sibling and right sibling all is low then should merge
             parent = node.parent
             parent_pos = parent.child_pos(node)
             if left_sibling is not None:
+                # parent_pos is point to right node
                 self.merge(left_sibling, node, parent, parent_pos - 1)
-                node = parent
+                left_node = left_sibling
             else:
-                self.merge(node, right_sibling, parent, parent_pos + 1)
+                # parent_pos is point to left node
+                self.merge(node, right_sibling, parent, parent_pos)
+                left_node = node
+
+            if parent is self.root and self.root.n == 0:
+                # up to the root
+                self.root = left_node
+                node = self.root
+            else:
                 node = parent
 
     def remove(self, value):
@@ -350,11 +361,11 @@ class BTree:
                 node.remove(value)
 
                 self.fix_remove(node, value)
-
             else:
                 pos = node.find_pos(value)
                 s = node.successor(pos)
-                node.keys[pos] = s.keys[0]
-                s.keys[0] = value
+                value = s.keys[0]
+                node.keys[pos] = value
+                s.remove(value)
                 self.fix_remove(s, value)
 

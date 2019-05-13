@@ -305,7 +305,7 @@ class BTree:
         #     parent_pos = parent_node.parent.find_next(parent_node.keys[0])
         #     parent_node = parent_node.parent
 
-    def fix_remove(self, node, value):
+    def fix_remove(self, node):
         while node is not self.root:
             if node is self.root or not node.is_low():
                 return
@@ -373,12 +373,12 @@ class BTree:
                     return
                 node.remove(value)
 
-                self.fix_remove(node, value)
+                self.fix_remove(node)
             else:
                 pos = node.find_pos(value)
                 s = node.successor(pos)
                 value = s.keys[0]
                 node.keys[pos] = value
                 s.remove(value)
-                self.fix_remove(s, value)
+                self.fix_remove(s)
 

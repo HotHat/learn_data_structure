@@ -24,7 +24,7 @@ int main()
 	MyBTree<int> tree(3);
 	std::queue<int> q;
 
-	for (int i = 200; i > 0; --i)
+	for (int i = 20; i > 0; --i)
 	{
 		int n = rand() % 100;
 		std::cout << n << ", ";

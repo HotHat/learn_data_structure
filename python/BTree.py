@@ -80,8 +80,8 @@ class BTreeNode:
         return None
 
     def remove(self, value):
-        assert self.is_leaf(), "remove value from node must be leaf"
         pos = self.find_pos(value)
+        assert (self.is_leaf() and pos is not None), "remove value from node must be leaf"
         # move node
         for i in range(pos + 1, self.n):
             self.keys[i-1] = self.keys[i]
@@ -108,14 +108,14 @@ class BTreeNode:
     def left_sibling(self):
         assert (self.parent is not None), "parent must not be none"
         p = self.parent.child_pos(self)
-        if p == 0:
+        if p == 0 or p is None:
             return None
         return self.parent.children[p-1]
 
     def right_sibling(self):
         assert (self.parent is not None), "parent must not be none"
         p = self.parent.child_pos(self)
-        if p == self.parent.n:
+        if p == self.parent.n or p is None:
             return None
         return self.parent.children[p+1]
 
@@ -148,6 +148,7 @@ class BTreeNode:
         return mid
 
     def successor(self, pos):
+        assert (not self.is_leaf()), "leaf have not successor"
         s = self.children[pos + 1]
         while s is not None and s.children[0] is not None:
             s = s.children[0]
@@ -364,9 +365,12 @@ class BTree:
 
         if node is not None:
             if node.is_leaf():
+                p = node.find_pos(value)
+                # not find in tree
+                if p is None:
+                    return
                 if node is self.root:
                     if self.root.n == 1:
-                        del self.root
                         self.root = None
                     else:
                         self.root.remove(value)

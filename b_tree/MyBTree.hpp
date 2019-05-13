@@ -4,6 +4,7 @@
 #include <queue>
 #include <string>
 #include <cassert>
+#include <utility>
 
 template<class T>
 class BTreeNode
@@ -111,6 +112,132 @@ public:
 
 	}
 
+	// function for remove node
+	std::pair<int, bool> childPositon(BTreeNode *node)
+	{
+		for (int i = 0; i < _capacity + 1; ++i)
+		{
+			if (node == _children[i])
+			{
+				return std::make_pair(i, true);
+			}
+		}
+		return std::make_pair(0, false);
+	}
+
+	std::pair<int, bool> findPosition(T value)
+	{
+		for (int i = 0; i < _capacity; ++i)
+		{
+			if (value == _keys[i])
+			{
+				return std::make_pair(i, true);
+			}
+		}
+		return std::make_pair(0, false);
+	}
+
+	BTreeNode *leftSibling()
+	{
+		assert(_parent != nullptr);
+		auto p = parent->childPosition(this);
+		if (!p.second || p.first == 0)
+		{
+			return nullptr;
+		}
+
+		return _parent->_children[p - 1];
+	}
+
+	BTreeNode *rightSibling()
+	{
+		assert(_parent != nullptr);
+		auto p = parent->childPosition(this);
+		if (!p.second || p.first == _parent->_capacity)
+		{
+			return nullptr;
+		}
+
+		return _parent->_children[p - 1];
+	}
+
+	bool isLow()
+	{
+		int m = middle();
+		return _capacity < m;
+	}
+
+	bool isEnough()
+	{
+		int m = middle();
+		return _capacity > m;
+	}
+	void remove(T value)
+	{
+		std::pair<int, bool> p = findPosition(value);
+		
+		assert(isLeaf() && p.second);
+
+		for (int i = p.first + 1; i < _capacity; --i)
+		{
+			_keys[i - 1] = _keys[i];
+		}
+		_capacity -= 1;
+
+	}
+	void backward(int pos)
+	{
+		assert(pos >= 0 && pos <= _capacity);
+		for (int i = pos; i < _capacity - 1, ++i) 
+		{
+			_keys[i] = _keys[i + 1];
+		}
+
+		if (!isLeaf())
+		{
+			for (int i = pos; i < _capacity, ++i)
+			{
+				_children[i] = _children[i + 1];
+			}
+			_children.erase(_capacity);
+		}
+		_keys.erase(_capacity - 1);
+		_capacity -= 1;
+	}
+
+	void forward(int pos)
+	{
+		assert(pos >= 0 && pos <= _capacity);
+		for (int i = pos; i < _capacity; ++i)
+		{
+			_keys[i + 1] = _keys[i];
+		}
+
+		if (!isLeaf())
+		{
+			for (int i = _capacity + 1; i > 0; --i)
+			{
+				_children[i] = _children[i - 1];
+			}
+		}
+
+		_capacity -= 1;
+
+	}
+
+	BTreeNode<T> *successor(int pos)
+	{
+		assert(!isLeaf() && pos <= _capacity);
+		aut s = _children[pos + 1];
+		while (s != nullptr && s->_children[0] != nullptr)
+		{
+			s = s->_children[0];
+		}
+
+		return s;
+	}
+
+
 private:
 	int _degree;
 	int _capacity;
@@ -217,6 +344,21 @@ public:
 
 	}
 
+	BTreeNode<T> *find(T value)
+	{
+
+	}
+
+	void remove(T value)
+	{
+		BTreeNode<T> node = find(value);
+
+		if (node != nullptr)
+		{
+			
+		}
+	}
+
 
 	BTreeNode<T> *splite(BTreeNode<T> *node)
 	{
@@ -303,6 +445,32 @@ public:
 private:
 	BTreeNode<T> *_root;
 	int _degree;
+
+	vode merge(BTreeNode<T> *left, BTreeNode<T> *right, BTreeNode<T> *parent, int parent_pos)
+	{
+		left->_keys[left->_capacity] = parent->_keys[parent_pos];
+		left->_capacity += 1;
+		// children must move first
+		if (!left->isLeaf() && !right->isLeaf())
+		{
+			for (int i = 0; i < right->_capacity + 1, ++i)
+			{
+				left->_children[left->_capacity + i] = right->_children[i];
+				left->_children[left->_capacity + i]->_parent = left
+			}
+		}
+
+		// move keys
+		for (int i = 0; i < right->_capacity; ++i)
+		{
+			left->_keys[left->_capacity] = right->_keys[i];
+			left->_capacity += 1;
+		}
+
+		BTreeNode<T> *l = parent->_childrenr[parent_pos];
+		parent->backward(parent_pos);
+		parent->_children[parent_pos] = left;
+	}
 
 
 };

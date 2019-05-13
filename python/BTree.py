@@ -62,7 +62,7 @@ class BTreeNode:
         for i in range(0, self.n):
             tr += "<f%d>| <f%d>%d|" % (i*2, i*2+1, self.keys[i])
 
-        print('%s<f%d>"]' % (tr, self.n * 2))
+        return '%s<f%d>"]' % (tr, self.n * 2)
 
     def name(self):
         return "node_" + str(self.sn)
@@ -82,10 +82,10 @@ class BTreeNode:
     def remove(self, value):
         assert self.is_leaf(), "remove value from node must be leaf"
         pos = self.find_pos(value)
-        self.keys[pos] = None
         # move node
-        for i in range(pos, self.n - pos):
-            self.keys[i] = self.keys[i + 1]
+        for i in range(pos + 1, self.n):
+            self.keys[i-1] = self.keys[i]
+        self.keys[self.n-1] = None
         self.n -= 1
 
     # function for remove key
@@ -115,7 +115,7 @@ class BTreeNode:
     def right_sibling(self):
         assert (self.parent is not None), "parent must not be none"
         p = self.parent.child_pos(self)
-        if p == self.parent.n+1:
+        if p == self.parent.n:
             return None
         return self.parent.children[p+1]
 
@@ -193,29 +193,34 @@ class BTree:
                         idx = node.find_next(value)
                         node = node.children[idx]
 
-    def print(self):
-        print("digraph structs { node [shape=record];")
-        if self.root is None:
-            return
-
-        q = Queue()
-        q.put(self.root)
-
-        while not q.empty():
-            current = q.get()
-            if current is None:
+    def print(self, name=None):
+        if name is None:
+            name = "BTree.gv"
+        with open("F:\\b_tree\\" + name, 'w+') as f:
+            f.write("digraph structs { node [shape=record];\n")
+            if self.root is None:
+                f.write("}")
                 return
 
-            current.print()
+            q = Queue()
+            q.put(self.root)
 
-            name = current.name()
+            while not q.empty():
+                current = q.get()
+                if current is None:
+                    return
 
-            for i in range(0, current.n+1):
-                c = current.children[i]
-                if c is not None:
-                    print("%s:f%d -> %s" % (name, 2*i, c.name()))
-                    q.put(c)
-        print("}")
+                n = current.print()
+                f.write(n + "\n")
+
+                name = current.name()
+
+                for i in range(0, current.n+1):
+                    c = current.children[i]
+                    if c is not None:
+                        f.write("%s:f%d -> %s\n" % (name, 2*i, c.name()))
+                        q.put(c)
+            f.write("}")
 
     def split(self, node):
         right = BTreeNode(self.degree)
@@ -264,6 +269,8 @@ class BTree:
 
     def find(self, value):
         node = self.root
+        if self.root is None:
+            return None
 
         while not node.is_leaf():
             num = node.n
@@ -281,16 +288,19 @@ class BTree:
     def merge(left_node, right_node, parent_node, parent_pos):
         left_node.keys[left_node.n] = parent_node.keys[parent_pos]
         left_node.n += 1
+        # children must move first
+        if not left_node.is_leaf() and not right_node.is_leaf():
+            for i in range(0, right_node.n + 1):
+                left_node.children[left_node.n + i] = right_node.children[i]
+                left_node.children[left_node.n + i].parent = left_node
         for i in range(0, right_node.n):
             left_node.keys[left_node.n] = right_node.keys[i]
             left_node.n += 1
-        if not left_node.is_leaf() and not right_node.is_leaf():
-            for i in range(0, right_node.n+1):
-                left_node.children[left_node.n + 1] = right_node.children[i]
+
         left = parent_node.children[parent_pos]
         parent_node.backward(parent_pos)
         parent_node.children[parent_pos] = left
-        del right_node
+        # del right_node
         # if parent_node.is_low():
         #     parent_pos = parent_node.parent.find_next(parent_node.keys[0])
         #     parent_node = parent_node.parent
@@ -303,12 +313,14 @@ class BTree:
             left_sibling = node.left_sibling()
             if left_sibling is not None and left_sibling.is_enough():
                 # change value
+                # parent value to node first, left node right most value to to parent
                 parent = node.parent
-                parent_pos = parent.find_next(value) - 1
+                parent_pos = parent.child_pos(node) - 1
                 node.forward(0)
                 if not node.is_leaf():
                     node.children[0] = left_sibling.children[left_sibling.n]
                     node.children[0].parent = node
+                    left_sibling.children[left_sibling.n] = None
                 node.keys[0] = parent.keys[parent_pos]
                 parent.keys[parent_pos] = left_sibling.keys[left_sibling.n - 1]
                 left_sibling.keys[left_sibling.n - 1] = None
@@ -317,15 +329,16 @@ class BTree:
             right_sibling = node.right_sibling()
             if right_sibling is not None and right_sibling.is_enough():
                 # change value
+                # parent value to left node left most, right node first to parent
                 parent = node.parent
                 parent_pos = parent.child_pos(node)
                 node.keys[node.n] = parent.keys[parent_pos]
                 node.n += 1
                 parent.keys[parent_pos] = right_sibling.keys[0]
-                right_sibling.backward(0)
                 if not node.is_leaf():
                     node.children[node.n] = right_sibling.children[0]
                     node.children[node.n].parent = node
+                right_sibling.backward(0)
                 return
             # left sibling and right sibling all is low then should merge
             parent = node.parent

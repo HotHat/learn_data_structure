@@ -4,24 +4,39 @@ from random import randint
 
 
 if __name__ == "__main__":
-    tree = BTree(3)
+    tree = BTree(5)
 
-    arr = [100, 50, 30, 510, 600, 500, 200, 201, 150, 300, 550, 580, 5, 28, 922, 82, 68, 182, 832, 234]
-
-    for i in arr:
-        # print("Insert %d" % i)
-        tree.insert(i)
+    # arr = [247,  555,  739,  918,  323,  243,  150,  37,  401,  859,  665,  61,  115,  644,  543,  265,  302,  544,  843, 991]
+    # print(len(arr))
+    # for i in arr:
+    #     print("Insert %d" % i)
+    #     tree.insert(i)
     # tree.print()
-# q = Queue()
-    # for i in range(50, 0, -1):
-    #     n = randint(1, 100)
-    #     q.put(n)
-    #     # print("%d, " % n, end=" ")
-    #     tree.insert(n)
+    #
+    # idx = 1
+    # for i in arr:
+    #     print("Delete: %d" % i)
+    #     if i == 861 or i == 859:
+    #         tree.remove(i)
+    #     else:
+    #         tree.remove(i)
+    #     tree.print(str(idx) + "_" + str(i) + ".gv")
+    #     idx += 1
+
+    q = Queue()
+    for i in range(1000, 0, -1):
+        n = randint(1, 1000)
+        q.put(n)
+        print("%d, " % n, end=" ")
+        tree.insert(n)
     tree.print()
-    for i in [500, 550, 300, 580, 600, 510, 234, 201, 150, 182, 200]:
-        print("Delete: %d" % i)
-        tree.remove(i)
-        tree.print()
+    print("Begin Remove Item(%d): " % q.qsize())
+    idx = 1
+    while not q.empty():
+        p = q.get()
+        print("delete %d" % p)
+        tree.remove(p)
+        tree.print(str(idx) + "_" + str(p) + ".gv")
+        idx += 1
 
 

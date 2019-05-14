@@ -47,7 +47,7 @@ public:
 	T middle()
 	{
 		int mid = 0;
-		assert(isFull());
+		// assert(isFull());
 
 		if (_degree % 2 == 0)
 		{
@@ -113,7 +113,7 @@ public:
 	}
 
 	// function for remove node
-	std::pair<int, bool> childPositon(BTreeNode *node)
+	std::pair<int, bool> childPositon(BTreeNode<T> *node)
 	{
 		for (int i = 0; i < _capacity + 1; ++i)
 		{
@@ -137,28 +137,28 @@ public:
 		return std::make_pair(0, false);
 	}
 
-	BTreeNode *leftSibling()
+	BTreeNode<T> *leftSibling()
 	{
 		assert(_parent != nullptr);
-		auto p = parent->childPosition(this);
+		auto p = _parent->childPositon(this);
 		if (!p.second || p.first == 0)
 		{
 			return nullptr;
 		}
 
-		return _parent->_children[p - 1];
+		return _parent->_children[p.first - 1];
 	}
 
-	BTreeNode *rightSibling()
+	BTreeNode<T> *rightSibling()
 	{
 		assert(_parent != nullptr);
-		auto p = parent->childPosition(this);
+		auto p = _parent->childPositon(this);
 		if (!p.second || p.first == _parent->_capacity)
 		{
 			return nullptr;
 		}
 
-		return _parent->_children[p - 1];
+		return _parent->_children[p.first - 1];
 	}
 
 	bool isLow()
@@ -178,7 +178,7 @@ public:
 		
 		assert(isLeaf() && p.second);
 
-		for (int i = p.first + 1; i < _capacity; --i)
+		for (int i = p.first + 1; i < _capacity; ++i)
 		{
 			_keys[i - 1] = _keys[i];
 		}
@@ -188,20 +188,20 @@ public:
 	void backward(int pos)
 	{
 		assert(pos >= 0 && pos <= _capacity);
-		for (int i = pos; i < _capacity - 1, ++i) 
+		for (int i = pos; i < _capacity - 1; ++i) 
 		{
 			_keys[i] = _keys[i + 1];
 		}
 
 		if (!isLeaf())
 		{
-			for (int i = pos; i < _capacity, ++i)
+			for (int i = pos; i < _capacity; ++i)
 			{
 				_children[i] = _children[i + 1];
 			}
-			_children.erase(_capacity);
+			_children.erase(_children.begin() + _capacity);
 		}
-		_keys.erase(_capacity - 1);
+		_keys.erase(_keys.begin() + (_capacity - 1));
 		_capacity -= 1;
 	}
 
@@ -228,7 +228,7 @@ public:
 	BTreeNode<T> *successor(int pos)
 	{
 		assert(!isLeaf() && pos <= _capacity);
-		aut s = _children[pos + 1];
+		auto s = _children[pos + 1];
 		while (s != nullptr && s->_children[0] != nullptr)
 		{
 			s = s->_children[0];
@@ -243,8 +243,8 @@ private:
 	int _capacity;
 	bool _isLeaf;
 	std::vector<T> _keys;
-	std::vector<BTreeNode *> _children;
-	BTreeNode *_parent;
+	std::vector<BTreeNode<T> *> _children;
+	BTreeNode<T> *_parent;
 	int _sn;
 
 	static int serial_number;
@@ -262,7 +262,7 @@ private:
 
 			if (!isLeaf())
 			{
-				BTreeNode *c = _children[p];
+				BTreeNode<T> *c = _children[p];
 				_children[p] = _children[p + 1];
 				_children[p + 1] = c;
 			}
@@ -309,7 +309,7 @@ public:
 
 			if (p->isFull())
 			{
-				auto *parent = p->_parent;
+				BTreeNode<T> *parent = p->_parent;
 
 				T mid = p->middle();
 				auto *right = splite(p);
@@ -362,21 +362,21 @@ public:
 				{
 					node = node->_children[i];
 				}
-				else if (node == node->_keys[i])
+				else if (value == node->_keys[i])
 				{
-					return node
+					return node;
 				}
 			}
-			node = node->_children[num]
+			node = node->_children[num];
 		}
 
-		return node
+		return node;
 
 	}
 
 	void remove(T value)
 	{
-		BTreeNode<T> node = find(value);
+		BTreeNode<T> *node = find(value);
 
 		if (node != nullptr)
 		{
@@ -390,12 +390,32 @@ public:
 
 				if (node == _root)
 				{
-					
+					if (_root->_capacity == 1)
+					{
+						delete _root;
+						_root = nullptr;
+					}
+					else
+					{
+						_root->remove(value);
+					}
 				}
+
+				node->remove(value);
+				fixRemove(node);
 			}
 			else
 			{
-
+				std::pair<int, bool> pos = node->findPosition(value);
+				if (!pos.second)
+				{
+					return;
+				}
+				BTreeNode<T> *s = node->successor(pos.first);
+				T value = s->_keys[0];
+				node->_keys[pos.first] = value;
+				s->remove(value);
+				fixRemove(s);
 			}
 		}
 	}
@@ -487,17 +507,17 @@ private:
 	BTreeNode<T> *_root;
 	int _degree;
 
-	void merge(BTreeNode<T> *left, BTreeNode<T> *right, BTreeNode<T> *parent, int parent_pos)
+	void merge(BTreeNode<T> *left, BTreeNode<T> *right, BTreeNode<T> *parent, int pos)
 	{
-		left->_keys[left->_capacity] = parent->_keys[parent_pos];
+		left->_keys[left->_capacity] = parent->_keys[pos];
 		left->_capacity += 1;
 		// children must move first
 		if (!left->isLeaf() && !right->isLeaf())
 		{
-			for (int i = 0; i < right->_capacity + 1, ++i)
+			for (int i = 0; i < right->_capacity + 1; ++i)
 			{
 				left->_children[left->_capacity + i] = right->_children[i];
-				left->_children[left->_capacity + i]->_parent = left
+				left->_children[left->_capacity + i]->_parent = left;
 			}
 		}
 
@@ -508,11 +528,99 @@ private:
 			left->_capacity += 1;
 		}
 
-		BTreeNode<T> *l = parent->_childrenr[parent_pos];
-		parent->backward(parent_pos);
-		parent->_children[parent_pos] = left;
+		// right node is useless;
+		delete right;
+
+		BTreeNode<T> *l = parent->_children[pos];
+		parent->backward(pos);
+		parent->_children[pos] = l;
 	}
 
+	void fixRemove(BTreeNode<T> *node)
+	{
+		while (node != _root)
+		{
+			if (node == _root or !node->isLow())
+			{
+				return;
+			}
+
+			BTreeNode<T> *left = node->leftSibling();
+			if (left != nullptr && left->isEnough())
+			{
+				// parent value to node first value, left node right value
+				// to parent value
+				BTreeNode<T> *parent = node->_parent;
+				std::pair<int, bool> ps = parent->childPositon(node);
+				int pos = ps.first - 1;
+				node->forward(0);
+				if (!node->isLeaf())
+				{
+					node->_children[0] = left->_children[left->_capacity];
+					node->_children[0]->_parent = node;
+					left->_children.erase(left->_children.begin() + left->_capacity);
+				}
+
+				node->_keys[0] = parent->_keys[pos];
+				parent->_keys[pos] = left->_keys[left->_capacity - 1];
+				left->_keys.erase(left->_keys.begin() + left->_capacity - 1);
+				left->_capacity -= 1;
+
+				return;
+			}
+			BTreeNode<T> *right = node->rightSibling();
+			if (right!= nullptr && right->isEnough())
+			{
+				// parent value to right most of left node, right node first to parnent
+				BTreeNode<T> *parent = node->_parent;
+				std::pair<int, bool> ps = parent->childPositon(node);
+				int pos = ps.first;
+				node->_keys[node->_capacity] = parent->_keys[pos];
+				node->_capacity += 1;
+				parent->_keys[pos] = right->_keys[0];
+				if (!node->isLeaf())
+				{
+					node->_children[node->_capacity] = right->_children[0];
+					node->_children[node->_capacity]->_parent = node;
+				}
+				right->backward(0);
+
+				return;
+			}
+			// merge node	
+			BTreeNode<T> *parent = node->_parent;
+			BTreeNode<T> *leftMost = nullptr;
+			std::pair<int, bool> ps = parent->childPositon(node);
+			int pos = ps.first;
+
+			if (left != nullptr)
+			{
+				merge(left, node, parent, pos - 1);
+				leftMost = left;
+			}
+			else if (right != nullptr)
+			{
+				merge(node, right, parent, pos);
+				leftMost = node;
+			}
+			else
+			{
+				assert(0);
+			}
+
+			if (parent == _root && _root->_capacity == 0)
+			{
+				_root = leftMost;
+
+			}
+			else
+			{
+				node = parent;
+			}
+
+			
+		}
+	}
 
 };
 

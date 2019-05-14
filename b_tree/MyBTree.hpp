@@ -346,6 +346,31 @@ public:
 
 	BTreeNode<T> *find(T value)
 	{
+		BTreeNode<T> *node = _root;
+		if (node == nullptr)
+		{
+			return nullptr;
+		}
+
+		while (!node->isLeaf())
+		{
+			int num = node->_capacity;
+
+			for (int i = 0; i < num; ++i)
+			{
+				if (value < node->_keys[i])
+				{
+					node = node->_children[i];
+				}
+				else if (node == node->_keys[i])
+				{
+					return node
+				}
+			}
+			node = node->_children[num]
+		}
+
+		return node
 
 	}
 
@@ -355,7 +380,23 @@ public:
 
 		if (node != nullptr)
 		{
-			
+			if (node->isLeaf())
+			{
+				std::pair<int, bool> p = node->findPosition(value);
+				if (!p.second)
+				{
+					return;
+				}
+
+				if (node == _root)
+				{
+					
+				}
+			}
+			else
+			{
+
+			}
 		}
 	}
 
@@ -446,7 +487,7 @@ private:
 	BTreeNode<T> *_root;
 	int _degree;
 
-	vode merge(BTreeNode<T> *left, BTreeNode<T> *right, BTreeNode<T> *parent, int parent_pos)
+	void merge(BTreeNode<T> *left, BTreeNode<T> *right, BTreeNode<T> *parent, int parent_pos)
 	{
 		left->_keys[left->_capacity] = parent->_keys[parent_pos];
 		left->_capacity += 1;

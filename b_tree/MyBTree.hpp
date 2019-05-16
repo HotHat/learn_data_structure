@@ -46,17 +46,8 @@ public:
 
 	T middle()
 	{
-		int mid = 0;
-		// assert(isFull());
-
-		if (_degree % 2 == 0)
-		{
-			mid = _degree / 2 - 1;
-		}
-		else
-		{
-			mid = _degree / 2;
-		}
+		int mid = middleIndex();
+		assert(isFull());
 
 		return _keys[mid];
 	}
@@ -163,13 +154,13 @@ public:
 
 	bool isLow()
 	{
-		int m = middle();
+		int m = middleIndex();
 		return _capacity < m;
 	}
 
 	bool isEnough()
 	{
-		int m = middle();
+		int m = middleIndex();
 		return _capacity > m;
 	}
 	void remove(T value)
@@ -271,6 +262,21 @@ private:
 		}
 
 		return p;
+	}
+
+	int middleIndex()
+	{
+		int mid = 0;
+		if (_degree % 2 == 0)
+		{
+			mid = _degree / 2 - 1;
+		}
+		else
+		{
+			mid = _degree / 2;
+		}
+
+		return mid;
 	}
 };
 
@@ -540,7 +546,7 @@ private:
 	{
 		while (node != _root)
 		{
-			if (node == _root or !node->isLow())
+			if (node == _root || !node->isLow())
 			{
 				return;
 			}

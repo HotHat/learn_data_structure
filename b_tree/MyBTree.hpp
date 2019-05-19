@@ -326,7 +326,6 @@ public:
 					_root->insert(mid, p, right);
 					_root->setLeaf(false);
 					p = _root;
-					return;
 				}
 				else
 				{

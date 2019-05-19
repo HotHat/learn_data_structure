@@ -326,6 +326,7 @@ public:
 					_root->insert(mid, p, right);
 					_root->setLeaf(false);
 					p = _root;
+					return;
 				}
 				else
 				{
@@ -426,7 +427,7 @@ public:
 		}
 	}
 
-
+	
 	BTreeNode<T> *splite(BTreeNode<T> *node)
 	{
 		assert(node->isFull());
@@ -445,7 +446,6 @@ public:
 		}
 
 		right->_capacity = mid;
-		node->_capacity = mid;
 
 		// copy right half content to right node
 		int start = mid + 1;
@@ -470,7 +470,10 @@ public:
 
 		// erase right half content in left node
 		node->_keys.erase(node->_keys.begin() + mid, node->_keys.begin() + node->_capacity) ;
+		node->_keys.resize(_degree);
 		node->_children.erase(node->_children.begin() + mid + 1, node->_children.begin() + (node->_capacity + 1));
+		node->_children.resize(_degree + 1);
+		node->_capacity = mid;
 
 		return right;
 	}

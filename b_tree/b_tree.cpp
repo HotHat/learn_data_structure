@@ -15,6 +15,7 @@ int main()
 	{
 		std::cout << "Add item: " << arr[i] << std::endl;
 		tree.insert(arr[i]);
+		tree.print();
 	}
 	tree.print();
 

@@ -403,19 +403,6 @@ public:
 					return;
 				}
 
-				if (node == _root)
-				{
-					if (_root->_capacity == 1)
-					{
-						delete _root;
-						_root = nullptr;
-					}
-					else
-					{
-						_root->remove(value);
-					}
-				}
-
 				node->remove(value);
 				fixRemove(node);
 			}
@@ -540,6 +527,7 @@ private:
 			{
 				left->_children[left->_capacity + i] = right->_children[i];
 				left->_children[left->_capacity + i]->_parent = left;
+				right->_children[i] = nullptr;
 			}
 		}
 
@@ -562,8 +550,15 @@ private:
 	{
 		while (node != _root)
 		{
+
 			if (node == _root || !node->isLow())
 			{
+				if (_root->_capacity == 0)
+				{
+					delete _root;
+					_root = nullptr;
+				}
+
 				return;
 			}
 
@@ -633,8 +628,10 @@ private:
 
 			if (parent == _root && _root->_capacity == 0)
 			{
+				_root->_children[0] = nullptr;
+				delete _root;
 				_root = leftMost;
-
+				return;
 			}
 			else
 			{

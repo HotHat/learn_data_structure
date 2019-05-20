@@ -20,12 +20,16 @@ public:
 		_isLeaf = true;
 		_sn = serial_number;
 		serial_number += 1;
-		_keys.resize(t);
-		_children.resize(t + 1);
+		_keys = new T[t]();
+		_children = new BTreeNode<T>*[t+1]();
 	}
 	~BTreeNode()
 	{
-
+		delete _keys;
+		for (int i = 0; i < _capacity + 1; ++i)
+		{
+			delete _children[i];
+		}
 	}
 
 	bool isFull()
@@ -149,7 +153,7 @@ public:
 			return nullptr;
 		}
 
-		return _parent->_children[p.first - 1];
+		return _parent->_children[p.first + 1];
 	}
 
 	bool isLow()
@@ -190,9 +194,9 @@ public:
 			{
 				_children[i] = _children[i + 1];
 			}
-			_children.erase(_children.begin() + _capacity);
+			_children[_capacity] = nullptr;
 		}
-		_keys.erase(_keys.begin() + (_capacity - 1));
+		_keys[_capacity - 1];
 		_capacity -= 1;
 	}
 
@@ -212,7 +216,7 @@ public:
 			}
 		}
 
-		_capacity -= 1;
+		_capacity += 1;
 
 	}
 
@@ -233,8 +237,8 @@ private:
 	int _degree;
 	int _capacity;
 	bool _isLeaf;
-	std::vector<T> _keys;
-	std::vector<BTreeNode<T> *> _children;
+	T *_keys;
+	BTreeNode<T> ** _children;
 	BTreeNode<T> *_parent;
 	int _sn;
 
@@ -361,19 +365,24 @@ public:
 		while (!node->isLeaf())
 		{
 			int num = node->_capacity;
-
-			for (int i = 0; i < num; ++i)
+			int i = 0;
+			for (; i < num; ++i)
 			{
 				if (value < node->_keys[i])
 				{
 					node = node->_children[i];
+					break;
 				}
 				else if (value == node->_keys[i])
 				{
 					return node;
 				}
 			}
-			node = node->_children[num];
+			if (i == num)
+			{
+
+				node = node->_children[num];
+			}
 		}
 
 		return node;
@@ -468,10 +477,15 @@ public:
 		}
 
 		// erase right half content in left node
-		node->_keys.erase(node->_keys.begin() + mid, node->_keys.begin() + node->_capacity) ;
-		node->_keys.resize(_degree);
-		node->_children.erase(node->_children.begin() + mid + 1, node->_children.begin() + (node->_capacity + 1));
-		node->_children.resize(_degree + 1);
+		//for (int i = mid; i < node->_capacity; ++i)
+		//{
+		//	node->_keys[i];
+		//}
+		for (int i = mid + 1; i < node->_capacity + 1; ++i)
+		{
+			node->_children[i] = nullptr;
+		}
+
 		node->_capacity = mid;
 
 		return right;
@@ -566,12 +580,13 @@ private:
 				{
 					node->_children[0] = left->_children[left->_capacity];
 					node->_children[0]->_parent = node;
-					left->_children.erase(left->_children.begin() + left->_capacity);
+					delete left->_children[left->_capacity];
+					left->_children[left->_capacity] = nullptr;
+
 				}
 
 				node->_keys[0] = parent->_keys[pos];
 				parent->_keys[pos] = left->_keys[left->_capacity - 1];
-				left->_keys.erase(left->_keys.begin() + left->_capacity - 1);
 				left->_capacity -= 1;
 
 				return;

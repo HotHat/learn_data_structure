@@ -14,7 +14,14 @@ class BinomialHeap:
         self.mini = None
 
     def push(self, value):
-        pass
+        node = BinomialNode(value)
+        if self.root is None:
+            self.root = node
+            self.mini = node
+        else:
+            node.sibling = self.root
+            self.root = node
+        self.__fix_push(self.root)
 
     def pop(self):
         pass
@@ -26,6 +33,9 @@ class BinomialHeap:
         pass
 
     def print(self):
+        pass
+
+    def __fix_push(self, node):
         pass
 
     def __union(self, left, right):

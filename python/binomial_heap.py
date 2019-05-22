@@ -45,71 +45,140 @@ class BinomialNode:
 
 class BinomialHeap:
     def __init__(self):
-        self.root = BinomialNode(None)
-        self.mini = None
+        self.root = None
+        self.min = None
 
-    def push(self, value):
+    def insert(self, value):
         node = BinomialNode(value)
-        p = self.root
-        if p.sibling is None:
-            self.root.sibling = node
-            self.mini = node
+        self.__union(self.root, node)
+
+    def get_min(self):
+        m = self.__find_min()
+        if m is not None:
+            return m.value
         else:
-            node.sibling = p.sibling
-            self.root.sibling = node
-        self.__fix_push()
+            return None
 
-    def pop(self):
+    def extract_min(self):
+        m = self.__find_min()
+        if m is None:
+            return
+        p = self.__find_pre(m)
+
+        if p is self.root:
+            self.root = m.sibling
+        else:
+            p.sibling = m.sibling
+        p.sibling = None
+        c = m.child
+        c.parent = None
+        s = self.__reverse(c)
+        self.__union(self.root, s)
+
+    def decrease(self, old, new):
         pass
 
-    def merge(self, other):
+    def delete(self, key):
         pass
 
-    def decrease(self, key):
-        pass
+    @staticmethod
+    def __link(h1, h2):
+        if h1 is None:
+            return h2
+        if h2 is None:
+            return h1
+
+        if h1.degree <= h2.degree:
+            root = h1
+        else:
+            root = h2
+        while h1 is not None and h2 is not None:
+            if h1.degree <= h2.degree:
+                tmp = h1.sibling
+                h1.sibling = h2
+                h1 = h2
+                h2 = tmp
+            elif h1.degree > h2.degree:
+                tmp = h2.sibling
+                h2.sibling = h1
+                h2 = h1
+                h1 = tmp
+        return root
 
     def print(self):
         print("digraph structs { ")
-        if self.root.sibling is not None:
-            self.root.sibling.print()
+        if self.root is not None:
+            self.root.print()
         print("}")
 
-    def __fix_push(self):
-        assert self.root.sibling is not None, "root must not be None"
-        father = self.root
-        point = father.sibling
-        while point is not None:
-            sibling = point.sibling
+    def __find_pre(self, n):
+        p = self.root
+        if p is n:
+            return p
+        while p.sibling is not n:
+            p = p.sibling
+        return p
 
-            if sibling is None:
-                break
-
-            if point.degree < sibling.degree:
-                break
-
-            # change position
-            elif sibling.degree < point.degree:
-                father.sibling = sibling
-                tmp = sibling.sibling
-                sibling.sibling = point
-                point.sibling = tmp
-                father = sibling
-            # union
-            elif sibling.degree == point.degree:
-                self.__union(father, point, sibling)
-                point = father.sibling
+    def __find_min(self):
+        if self.root is None:
+            return None
+        x = self.root
+        y = self.root
+        while x is not None:
+            if x .value < y.value:
+                y = x
+            x = x.sibling
+        return y
 
     @staticmethod
-    def __union(father, left, right):
-        if left.value > right.value:
-            father.sibling = right
-            left.sibling = right.child
-            right.child = left
-            right.degree += 1
-        else:
-            left.sibling = right.sibling
-            right.sibling = left.child
-            left.child = right
-            left.degree += 1
+    def __merge(h1, h2):
+        assert (h1.degree == h2.degree), "degree must the same"
+        h2.sibling = h1.child
+        h1.child = h2
+        h2.parent = h1
+        h1.degree = h2.degree + 1
+
+    def __union(self, h1, h2):
+        self.root = self.__link(h1, h2)
+        x = self.root
+        f = x
+        while x is not None:
+            nxt = x.sibling
+            if nxt is None:
+                return
+
+            if nxt.sibling is not None and nxt.sibling.degree == x.degree:
+                x = nxt
+            elif x.degree == nxt.degree:
+                if x.value <= nxt.value:
+                    x.sibling = nxt.sibling
+                    self.__merge(x, nxt)
+                else:
+                    if x is self.root:
+                        self.root = nxt
+                        f = nxt
+                    else:
+                        f.sibling = nxt
+                    self.__merge(nxt, x)
+                    x = nxt
+            else:
+                if x is not self.root:
+                    f = f.sibling
+                x = nxt
+
+    @staticmethod
+    def __reverse(c):
+        if c.sibling is None:
+            c.parent = None
+            return c
+        m = c
+        while m.sibling.sibling is not None:
+            m.parent = None
+            m = m.sibling
+        p = m.sibling
+        p.parent = None
+        p.sibling = c
+        m.sibling = None
+        return p
 
 

@@ -11,9 +11,12 @@ class TestBinomialHeap(unittest.TestCase):
 
     def test_push(self):
         heap = BinomialHeap()
-        for i in [10, 20, 30, 40, 50, 60, 70, 90]:
-            heap.push(i)
-            heap.print()
+        for i in [10, 20, 30, 40, 50, 60, 70]:
+            heap.insert(i)
+        heap.print()
+
+        heap.extract_min()
+        heap.print()
 
         self.assertEqual(1, 1)
 

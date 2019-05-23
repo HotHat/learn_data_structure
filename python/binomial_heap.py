@@ -22,25 +22,36 @@ class BinomialNode:
             q.put(self)
 
         while not q.empty():
-            p = q.get()
-            start = p
+            root = q.get()
+            idx = root
             s = []
-            while start is not None:
-                s.append(start.name())
-                start = start.sibling
+            while idx is not None:
+                s.append(idx.name())
+                sb = idx.sibling
+                if sb is not None:
+                    q.put(sb)
+                    if idx.parent is None:
+                        print("%s -> %s" % (idx.name(),  sb.name()))
+                idx = sb
+
             for i in s:
                 print(i)
+
             if len(s) > 1:
                 print("{rank=same; %s}" % " ".join(s))
-            start = p
-            while start is not None:
-                s = start.sibling
-                if start.child is not None:
-                    print("%s -> %s" % (start.name(), start.child.name()))
-                    q.put(start.child)
-                if s is not None:
-                    print("%s -> %s" % (start.name(), s.name()))
-                start = start.sibling
+
+            # children
+            c = root.child
+            if c is not None:
+                s2 = []
+                while c is not None:
+                    s2.append(c.name())
+                    q.put(c)
+                    c = c.sibling
+                if len(s2) > 1:
+                    print("{rank=same; %s}" % " ".join(s2))
+                for i in s2:
+                    print("%s -> %s" % (root.name(),  i))
 
 
 class BinomialHeap:
@@ -65,7 +76,7 @@ class BinomialHeap:
             return
         p = self.__find_pre(m)
 
-        if p is self.root:
+        if m is self.root:
             self.root = m.sibling
         else:
             p.sibling = m.sibling
@@ -94,19 +105,23 @@ class BinomialHeap:
             root = h2
         while h1 is not None and h2 is not None:
             if h1.degree <= h2.degree:
-                tmp = h1.sibling
-                h1.sibling = h2
-                h1 = h2
-                h2 = tmp
+                s = h1.sibling
+                if h1.degree == h2.degree or s is None or s.degree > h2.degree:
+                    tmp = h1.sibling
+                    h1.sibling = h2
+                    h1 = h2
+                    h2 = tmp
+                else:
+                    h1 = s
             elif h1.degree > h2.degree:
-                tmp = h2.sibling
-                h2.sibling = h1
+                tmp = h2
                 h2 = h1
                 h1 = tmp
+
         return root
 
     def print(self):
-        print("digraph structs { ")
+        print("strict digraph binomial_heap{ ")
         if self.root is not None:
             self.root.print()
         print("}")
@@ -168,17 +183,26 @@ class BinomialHeap:
 
     @staticmethod
     def __reverse(c):
+        if c is None:
+            return c
+
         if c.sibling is None:
             c.parent = None
             return c
+        stack = []
         m = c
-        while m.sibling.sibling is not None:
+        while m is not None:
             m.parent = None
+            stack.append(m)
             m = m.sibling
-        p = m.sibling
-        p.parent = None
-        p.sibling = c
+        root = stack.pop()
+        m = root
+        while len(stack) > 0:
+            n = stack.pop()
+            m.sibling = n
+            m = n
         m.sibling = None
-        return p
+
+        return root
 
 

@@ -5,12 +5,12 @@ class BinomialHeapNode
 {
 public:
 	BinomialHeapNode(T v):
-		m_degree(0),m_value(v),m_parent(nullptr),
-		m_sibling(nullptr),m_child(nullptr)
+		degree_(0),value_(v),parent_(nullptr),
+		sibling_(nullptr),child_(nullptr)
 	{
 	}
 
-	void print()
+	void Print()
 	{
 
 	}
@@ -18,22 +18,23 @@ public:
 	template<class U> friend class BinomialHeap;
 
 private:
-	int m_degree;
-	T m_value;
-	BinomialHeap* m_parent, m_sibling, m_child;
+	int degree_;
+	T value_;
+	BinomialHeapNode<T>* parent_, *sibling_, *child_;
 };
 
 template<class T>
 class BinomialHeap
 {
 public:
-	BinomialHeap():  m_root(nullptr)
+	BinomialHeap():  root_(nullptr)
 	{ }
 	
 
-	void inert(T value)
+	void Insert(T value)
 	{
-
+	    auto node = new BinomialHeapNode<T>(value);
+        Union(root_, node);
 	}
 
 	T GetMin()
@@ -41,38 +42,45 @@ public:
 
 	}
 
-	void extractMin()
+	void ExtractMin()
 	{
 
 	}
 
-	void remove(T v)
+	void Remove(T v)
 	{
 
 	}
 
-	void decrease(T old, T new)
+	void Decrease(T old, T target)
 	{
 
 	}
 
 private:
-	BinomialHeapNode* m_root;
+	BinomialHeapNode<T>* root_;
 
-	BinomialHeapNode* find(T value)
+	BinomialHeapNode<T>* find(T value)
 	{
 
 	}
-	void link(const BinomialHeap<T>& h1, const BinomialHeap<T>& h2)
+	BinomialHeapNode<T> *Link(const BinomialHeapNode<T>* h1, const BinomialHeapNode<T>* h2)
 	{
 
 	}
-	void merge(const BinomialHeap<T>& h1, const BinomialHeap<T>& h2)
+	void Merge(const BinomialHeapNode<T>& h1, const BinomialHeapNode<T>* h2)
 	{
 
 	}
-	void unionNode(const BinomialHeap<T>& h1, const BinomialHeap<T>& h2)
+	void Fix(const BinomialHeapNode<T> &h)
+    {
+
+    }
+
+	void Union(const BinomialHeapNode<T>* h1, const BinomialHeapNode<T>* h2)
 	{
+	   root_ =  Link(h1, h2);
+
 
 	}
 };

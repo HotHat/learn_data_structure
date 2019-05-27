@@ -2,7 +2,7 @@
 //
 
 #include <iostream>
-#include "binomial_heap.cpp"
+#include "binomial_heap.hpp"
 
 int main()
 {

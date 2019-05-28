@@ -1,4 +1,5 @@
 from queue import Queue
+import math
 
 
 class BinomialNode:
@@ -14,7 +15,7 @@ class BinomialNode:
         BinomialNode.serial_number += 1
 
     def name(self):
-        return "s%d_%d" % (self.sn, self.value)
+        return "s%d_%a" % (self.sn, self.value)
 
     def print(self):
         q = Queue()
@@ -89,10 +90,63 @@ class BinomialHeap:
         self.__union(self.root, s)
 
     def decrease(self, old, new):
-        pass
+        t = self.__find(old)
+        if t is None:
+            return False
+
+        t.value = new
+        while t.parent is not None:
+            f = t.parent
+            tmp = f.value
+            f.value = t.value
+            t.value = tmp
+            t = f
+        return True
 
     def delete(self, key):
-        pass
+        p = self.__find(key)
+        if p is None:
+            return
+
+        r = self.decrease(key, -math.inf)
+        if r:
+            self.extract_min()
+
+    def __find(self, value):
+        if self.root is None:
+            return None
+
+        q = Queue()
+        s = self.__get_sibling(self.root)
+        for i in s:
+            q.put(i)
+
+        while not q.empty():
+            n = q.get()
+            if n.value == value:
+                return n
+            elif n.value < value:
+                c = self.__get_child(n)
+                for i in c:
+                    q.put(i)
+        return None
+
+    @staticmethod
+    def __get_sibling(n):
+        r = []
+        while n is not None:
+            r.append(n)
+            n = n.sibling
+        return r
+
+    def __get_child(self, n):
+        if n is None or n.child is None:
+            return []
+        else:
+            return self.__get_sibling(n.child)
+
+
+
 
     @staticmethod
     def __link(h1, h2):

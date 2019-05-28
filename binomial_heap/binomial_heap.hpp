@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 #include <cassert>
+#include <stack>
+#include <utility>
 
 template<class T>
 class BinomialHeapNode
@@ -119,14 +121,59 @@ public:
         Union(root_, node);
 	}
 
-	T GetMin()
+	std::pair<T, bool> GetMin()
 	{
-
+		auto r = FindMin();
+		if (r.second)
+		{
+			return std::make_pair(r.first->value_, true);
+		}
+		else
+		{
+			return std::make_pair(T{}, false);
+		}
 	}
 
 	void ExtractMin()
 	{
+		auto f = FindMin();
 
+		if (!f.second)
+		{
+			return;
+		}
+
+		auto min = f.first;
+
+		auto pre = FindPre(min);
+		if (!pre.second)
+		{
+			return;
+		}
+
+		// min in the first position
+		if (pre.first == nullptr)
+		{
+			root_ = min->sibling_;
+		}
+		else
+		{
+			pre.first->sibling_ = min->sibling_;
+		}
+		min->sibling_ = nullptr;
+
+		auto c = min->child_;
+		auto idx = c;
+		while (idx != nullptr)
+		{
+			idx->parent_ = nullptr;
+			idx = idx->sibling_;
+		}
+
+		delete min;
+
+		auto r = Reverse(c);
+		Union(root_, r);
 	}
 
 	void Remove(T v)
@@ -152,10 +199,51 @@ public:
 private:
 	BinomialHeapNode<T>* root_;
 
-	BinomialHeapNode<T>* find(T value)
+	BinomialHeapNode<T>* Find(T value)
 	{
 
 	}
+
+	std::pair<BinomialHeapNode<T> *, bool>FindMin()
+	{
+		auto r = root_;
+		if (root_ == nullptr)
+		{
+			return std::make_pair(nullptr, false);
+		}
+		auto min = root_;
+
+		while (r != nullptr)
+		{
+			if (r->value_ < min->value_)
+			{
+				min = r;
+			}
+			r = r->sibling_;
+		}
+
+		return std::make_pair(min, true);
+
+	}
+	std::pair<BinomialHeapNode<T> *, bool>FindPre(BinomialHeapNode<T> *s)
+	{
+		auto r = root_;
+		if (root_ == nullptr)
+		{
+			return std::make_pair(nullptr, false);
+		}
+
+		while (r != nullptr && r->sibling_ != s)
+		{
+			r = r->sibling_;
+		}
+
+		return std::make_pair(r, true);
+
+	}
+
+
+
 	BinomialHeapNode<T> *Link(BinomialHeapNode<T>* h1, BinomialHeapNode<T>* h2)
 	{
 		if (h1 == nullptr)
@@ -280,6 +368,40 @@ private:
 			   x = nxt;
 		   }
 	   }
+
+	}
+
+	BinomialHeapNode<T> *Reverse(BinomialHeapNode<T> *root)
+	{
+		std::stack<BinomialHeapNode<T>*> s;
+		auto idx = root;
+		while (idx != nullptr)
+		{
+			s.push(idx);
+			idx = idx->sibling_;
+		}
+		
+		if (s.empty())
+		{
+			return nullptr;
+		}
+
+		BinomialHeapNode<T> *r = s.top();
+		s.pop();
+		idx = r;
+
+		while (!s.empty())
+		{
+			auto i = s.top();
+			s.pop();
+
+			idx->sibling_ = i;
+			idx = i;
+		}
+
+		idx->sibling_ = nullptr;
+
+		return r;
 
 	}
 };

@@ -80,9 +80,11 @@ class BinomialHeap:
             self.root = m.sibling
         else:
             p.sibling = m.sibling
-        p.sibling = None
+
+        m.sibling = None
+
         c = m.child
-        c.parent = None
+
         s = self.__reverse(c)
         self.__union(self.root, s)
 
@@ -186,9 +188,6 @@ class BinomialHeap:
         if c is None:
             return c
 
-        if c.sibling is None:
-            c.parent = None
-            return c
         stack = []
         m = c
         while m is not None:

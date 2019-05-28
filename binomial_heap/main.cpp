@@ -12,8 +12,26 @@ int main()
 	for(auto i : v)
 	{
 		heap.Insert(i);
-		heap.Print();
+		// heap.Print();
 	}
+
+	auto r = heap.GetMin();
+
+	if (r.second)
+	{
+		std::cout << r.first << std::endl;
+	}
+	else
+	{
+		std::cout << "Error Happend" << std::endl;
+	}
+
+	heap.ExtractMin();
+	heap.Print();
+	heap.ExtractMin();
+	heap.Print();
+	heap.ExtractMin();
+	heap.Print();
 
 }
 

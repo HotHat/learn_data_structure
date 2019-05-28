@@ -178,11 +178,37 @@ public:
 
 	void Remove(T v)
 	{
+		auto p = Find(v);
+		if (p == nullptr)
+		{
+			return;
+		}
+
+		auto r = Decrease(v, )
 
 	}
 
 	void Decrease(T old, T target)
 	{
+		auto t = Find(old);
+		if (t == nullptr)
+		{
+			return false;
+		}
+
+		t->value_ = target;
+
+		while (t->parent_ != nullptr)
+		{
+			auto f = t->parent_;
+			auto tmp = f->vaule_;
+			f->value_ = t.value_;
+			t->value_ = tmp;
+			t = f;
+
+		}
+
+		return true;
 
 	}
 	void Print()
@@ -201,6 +227,38 @@ private:
 
 	BinomialHeapNode<T>* Find(T value)
 	{
+		if (root_ == nullptr)
+		{
+			return nullptr;
+		}
+
+		std::queue<BinomialHeapNode<T>*> q;
+		auto s = GetSibling(root_);
+		for (auto i : s)
+		{
+			q.push(i);
+		}
+
+		while (!s.empty())
+		{
+			auto n = q.front();
+			q.pop();
+
+			if (n->value == value)
+			{
+				return n;
+			}
+			else if (n.value < value)
+			{
+				auto c = GetSibling(n->child);
+				for (auto i : c)
+				{
+					q.push();
+				}
+			}
+		}
+
+		return nullptr;
 
 	}
 
@@ -403,5 +461,17 @@ private:
 
 		return r;
 
+	}
+
+	std::vector<BinomialHeapNode<T>*> GetSibling(BinomialHeapNode<T> *n)
+	{
+		std::vector<BinomialHeapNode<T>*> result;
+		while (n != nullptr)
+		{
+			result.push_back(n);
+			n = n->sibling_;
+		}
+
+		return result;
 	}
 };

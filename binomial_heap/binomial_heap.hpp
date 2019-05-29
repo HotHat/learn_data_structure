@@ -144,36 +144,7 @@ public:
 		}
 
 		auto min = f.first;
-
-		auto pre = FindPre(min);
-		if (!pre.second)
-		{
-			return;
-		}
-
-		// min in the first position
-		if (pre.first == nullptr)
-		{
-			root_ = min->sibling_;
-		}
-		else
-		{
-			pre.first->sibling_ = min->sibling_;
-		}
-		min->sibling_ = nullptr;
-
-		auto c = min->child_;
-		auto idx = c;
-		while (idx != nullptr)
-		{
-			idx->parent_ = nullptr;
-			idx = idx->sibling_;
-		}
-
-		delete min;
-
-		auto r = Reverse(c);
-		Union(root_, r);
+		ExtractMinNode(min);
 	}
 
 	void Remove(T v)
@@ -184,8 +155,10 @@ public:
 			return;
 		}
 
-		auto r = Decrease(v, )
+		auto min = BubbleUp(p, true);
 
+		
+		ExtractMinNode(min);
 	}
 
 	void Decrease(T old, T target)
@@ -198,15 +171,7 @@ public:
 
 		t->value_ = target;
 
-		while (t->parent_ != nullptr)
-		{
-			auto f = t->parent_;
-			auto tmp = f->vaule_;
-			f->value_ = t.value_;
-			t->value_ = tmp;
-			t = f;
-
-		}
+		BubbleUp(t, false);
 
 		return true;
 
@@ -473,5 +438,78 @@ private:
 		}
 
 		return result;
+	}
+
+	// if to top true bubble node to root
+	void BubbleUp(BinomialHeapNode<T> *n, bool to_top)
+	{
+		if (to_top) {
+			while (n->parent_ != nullptr)
+			{
+				auto f = n->parent_;
+				auto tmp = n->vaule_;
+				f->value_ = n.value_;
+				n->value_ = tmp;
+				n = f;
+
+			}
+		}
+		else
+		{
+			while (n->parent_ != nullptr && n->value_ < n->parent_->value_)
+			{
+				auto f = n->parent_;
+				auto tmp = n->vaule_;
+				f->value_ = n.value_;
+				n->value_ = tmp;
+				n = f;
+
+			}
+		}
+
+		
+		return n;
+	}
+
+	void RemoveNode(BinomialHeapNode<T> *n)
+	{
+		assert(n != nullptr && "remove node must not nullptr");
+		assert(n->parent_ == nullptr && "remove node must be root(have not parent) level");
+
+		auto s = GetSibling(n->child_);
+
+		for (auto i : s)
+		{
+			i->parent_ = nullptr;
+		}
+
+		delete n;
+	}
+
+	void ExtractMinNode(BinomialHeapNode<T> *min)
+	{
+		auto pre = FindPre(min);
+		if (!pre.second)
+		{
+			return;
+		}
+
+		// min in the first position
+		if (pre.first == nullptr)
+		{
+			root_ = min->sibling_;
+		}
+		else
+		{
+			pre.first->sibling_ = min->sibling_;
+		}
+		min->sibling_ = nullptr;
+
+		auto c = min->child_;
+
+		RemoveNode(min);
+
+		auto r = Reverse(c);
+		Union(root_, r);
 	}
 };

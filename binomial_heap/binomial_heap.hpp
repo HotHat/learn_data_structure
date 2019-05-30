@@ -10,104 +10,6 @@
 #include <utility>
 
 template<class T>
-class BinomialHeapNode
-{
-public:
-	BinomialHeapNode(T v):
-		degree_(0),value_(v),parent_(nullptr),
-		sibling_(nullptr),child_(nullptr)
-	{
-		sn_ = serial_number;
-		serial_number += 1;
-	}
-
-	void Print()
-	{
-		std::queue<BinomialHeapNode<T>*> q;
-		if (this != nullptr)
-		{
-			q.push(this);
-		}
-
-		while (!q.empty())
-		{
-			auto root = q.front();
-			q.pop();
-			auto idx = root;
-
-			std::vector<std::string> s;
-
-			while (idx != nullptr)
-			{
-				s.push_back(idx->Name());
-				auto sb = idx->sibling_;
-
-				if (sb != nullptr)
-				{
-					q.push(sb);
-					if (idx->parent_ == nullptr)
-					{
-						std::cout << idx->Name() << " -> " << sb->Name() << std::endl;
-					}
-				}
-				idx = sb; 
-			}
-
-			BOOST_FOREACH(std::string i, s)
-			{
-				std::cout << i << std::endl;
-			}
-
-			if (s.size() > 1)
-			{
-				std::cout << "{rank=same; " 
-					<< boost::algorithm::join(s, " ") << " } " << std::endl;
-			}
-
-			auto c = root->child_;
-			if (c != nullptr)
-			{
-				std::vector<std::string> s2;
-				while (c != nullptr)
-				{
-					s2.push_back(c->Name());
-					q.push(c);
-					c = c->sibling_;
-				}
-
-				if (s2.size() > 1)
-				{
-					std::cout << "{rank=same; " 
-						<< boost::algorithm::join(s2, " ") << " }" << std::endl;
-				}
-				BOOST_FOREACH(std::string i, s2)
-				{
-					std::cout << root->Name() << " -> " << i << std::endl;
-				}
-			}
-		}
-	}
-
-	std::string Name()
-	{
-		std::string name;
-		return name + "s" + std::to_string(sn_) + "_" + std::to_string(value_);
-	}
-
-	template<class U> friend class BinomialHeap;
-
-private:
-	int degree_;
-	T value_;
-	int sn_;
-	BinomialHeapNode<T>* parent_, *sibling_, *child_;
-	static int serial_number;
-};
-
-template<class T>
-int BinomialHeapNode<T>::serial_number = 1;
-
-template<class T>
 class BinomialHeap
 {
 public:
@@ -117,7 +19,7 @@ public:
 
 	void Insert(T value)
 	{
-	    auto node = new BinomialHeapNode<T>(value);
+	    auto node = new BinomialHeapNode(value);
         Union(root_, node);
 	}
 
@@ -187,17 +89,113 @@ public:
 
 		std::cout << "}" << std::endl;
 	}
-private:
-	BinomialHeapNode<T>* root_;
+protected:
+	class BinomialHeapNode
+	{
+	public:
+		BinomialHeapNode(T v) :
+			degree_(0), value_(v), parent_(nullptr),
+			sibling_(nullptr), child_(nullptr)
+		{
+			sn_ = serial_number;
+			serial_number += 1;
+		}
 
-	BinomialHeapNode<T>* Find(T value)
+		void Print()
+		{
+			std::queue<BinomialHeapNode*> q;
+			if (this != nullptr)
+			{
+				q.push(this);
+			}
+
+			while (!q.empty())
+			{
+				auto root = q.front();
+				q.pop();
+				auto idx = root;
+
+				std::vector<std::string> s;
+
+				while (idx != nullptr)
+				{
+					s.push_back(idx->Name());
+					auto sb = idx->sibling_;
+
+					if (sb != nullptr)
+					{
+						q.push(sb);
+						if (idx->parent_ == nullptr)
+						{
+							std::cout << idx->Name() << " -> " << sb->Name() << std::endl;
+						}
+					}
+					idx = sb;
+				}
+
+				BOOST_FOREACH(std::string i, s)
+				{
+					std::cout << i << std::endl;
+				}
+
+				if (s.size() > 1)
+				{
+					std::cout << "{rank=same; "
+						<< boost::algorithm::join(s, " ") << " } " << std::endl;
+				}
+
+				auto c = root->child_;
+				if (c != nullptr)
+				{
+					std::vector<std::string> s2;
+					while (c != nullptr)
+					{
+						s2.push_back(c->Name());
+						q.push(c);
+						c = c->sibling_;
+					}
+
+					if (s2.size() > 1)
+					{
+						std::cout << "{rank=same; "
+							<< boost::algorithm::join(s2, " ") << " }" << std::endl;
+					}
+					BOOST_FOREACH(std::string i, s2)
+					{
+						std::cout << root->Name() << " -> " << i << std::endl;
+					}
+				}
+			}
+		}
+
+		std::string Name()
+		{
+			std::string name;
+			return name + "s" + std::to_string(sn_) + "_" + std::to_string(value_);
+		}
+
+		template<class T> friend class BinomialHeap;
+
+	private:
+		int degree_;
+		T value_;
+		int sn_;
+		BinomialHeapNode* parent_, *sibling_, *child_;
+		static int serial_number;
+	};
+
+
+private:
+	BinomialHeapNode* root_;
+
+	BinomialHeapNode* Find(T value)
 	{
 		if (root_ == nullptr)
 		{
 			return nullptr;
 		}
 
-		std::queue<BinomialHeapNode<T>*> q;
+		std::queue<BinomialHeapNode*> q;
 		auto s = GetSibling(root_);
 		for (auto i : s)
 		{
@@ -227,7 +225,7 @@ private:
 
 	}
 
-	std::pair<BinomialHeapNode<T> *, bool>FindMin()
+	std::pair<BinomialHeapNode *, bool>FindMin()
 	{
 		auto r = root_;
 		if (root_ == nullptr)
@@ -248,7 +246,7 @@ private:
 		return std::make_pair(min, true);
 
 	}
-	std::pair<BinomialHeapNode<T> *, bool>FindPre(BinomialHeapNode<T> *s)
+	std::pair<BinomialHeapNode *, bool>FindPre(BinomialHeapNode *s)
 	{
 		auto r = root_;
 		if (root_ == nullptr)
@@ -267,7 +265,7 @@ private:
 
 
 
-	BinomialHeapNode<T> *Link(BinomialHeapNode<T>* h1, BinomialHeapNode<T>* h2)
+	BinomialHeapNode *Link(BinomialHeapNode* h1, BinomialHeapNode* h2)
 	{
 		if (h1 == nullptr)
 		{
@@ -279,7 +277,7 @@ private:
 			return h1;
 		}
 
-		BinomialHeapNode<T>* root;
+		BinomialHeapNode* root;
 		if (h1->degree_ <= h2->degree_)
 		{
 			root = h1;
@@ -316,7 +314,7 @@ private:
 
 		return root;
 	}
-	void Merge(BinomialHeapNode<T>* h1, BinomialHeapNode<T>* h2)
+	void Merge(BinomialHeapNode* h1, BinomialHeapNode* h2)
 	{
 		assert(h1->degree_ == h2->degree_ && "Merge must have same degree");
 		if (h1->value_ > h2->value_)
@@ -335,12 +333,12 @@ private:
 		}
 
 	}
-	void Fix(const BinomialHeapNode<T> &h)
+	void Fix(const BinomialHeapNode &h)
     {
 
     }
 
-	void Union(BinomialHeapNode<T>* h1, BinomialHeapNode<T>* h2)
+	void Union(BinomialHeapNode* h1, BinomialHeapNode* h2)
 	{
 	   root_ =  Link(h1, h2);
 
@@ -394,9 +392,9 @@ private:
 
 	}
 
-	BinomialHeapNode<T> *Reverse(BinomialHeapNode<T> *root)
+	BinomialHeapNode *Reverse(BinomialHeapNode *root)
 	{
-		std::stack<BinomialHeapNode<T>*> s;
+		std::stack<BinomialHeapNode*> s;
 		auto idx = root;
 		while (idx != nullptr)
 		{
@@ -409,7 +407,7 @@ private:
 			return nullptr;
 		}
 
-		BinomialHeapNode<T> *r = s.top();
+		BinomialHeapNode *r = s.top();
 		s.pop();
 		idx = r;
 
@@ -428,9 +426,9 @@ private:
 
 	}
 
-	std::vector<BinomialHeapNode<T>*> GetSibling(BinomialHeapNode<T> *n)
+	std::vector<BinomialHeapNode*> GetSibling(BinomialHeapNode *n)
 	{
-		std::vector<BinomialHeapNode<T>*> result;
+		std::vector<BinomialHeapNode*> result;
 		while (n != nullptr)
 		{
 			result.push_back(n);
@@ -441,7 +439,7 @@ private:
 	}
 
 	// if to top true bubble node to root
-	BinomialHeapNode<T>* BubbleUp(BinomialHeapNode<T> *n, bool to_top)
+	BinomialHeapNode* BubbleUp(BinomialHeapNode *n, bool to_top)
 	{
 		if (to_top) {
 			while (n->parent_ != nullptr)
@@ -471,7 +469,7 @@ private:
 		return n;
 	}
 
-	void RemoveNode(BinomialHeapNode<T> *n)
+	void RemoveNode(BinomialHeapNode *n)
 	{
 		assert(n != nullptr && "remove node must not nullptr");
 		assert(n->parent_ == nullptr && "remove node must be root(have not parent) level");
@@ -486,7 +484,7 @@ private:
 		delete n;
 	}
 
-	void ExtractMinNode(BinomialHeapNode<T> *min)
+	void ExtractMinNode(BinomialHeapNode *min)
 	{
 		auto pre = FindPre(min);
 		if (!pre.second)
@@ -512,4 +510,7 @@ private:
 		auto r = Reverse(c);
 		Union(root_, r);
 	}
-};
+}; 
+
+template<class T>
+int BinomialHeap<T>::BinomialHeapNode::serial_number = 1;

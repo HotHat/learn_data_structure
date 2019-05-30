@@ -161,7 +161,7 @@ public:
 		ExtractMinNode(min);
 	}
 
-	void Decrease(T old, T target)
+	bool Decrease(T old, T target)
 	{
 		auto t = Find(old);
 		if (t == nullptr)
@@ -209,16 +209,16 @@ private:
 			auto n = q.front();
 			q.pop();
 
-			if (n->value == value)
+			if (n->value_ == value)
 			{
 				return n;
 			}
-			else if (n.value < value)
+			else if (n->value_ < value)
 			{
-				auto c = GetSibling(n->child);
+				auto c = GetSibling(n->child_);
 				for (auto i : c)
 				{
-					q.push();
+					q.push(i);
 				}
 			}
 		}
@@ -441,14 +441,14 @@ private:
 	}
 
 	// if to top true bubble node to root
-	void BubbleUp(BinomialHeapNode<T> *n, bool to_top)
+	BinomialHeapNode<T>* BubbleUp(BinomialHeapNode<T> *n, bool to_top)
 	{
 		if (to_top) {
 			while (n->parent_ != nullptr)
 			{
 				auto f = n->parent_;
-				auto tmp = n->vaule_;
-				f->value_ = n.value_;
+				auto tmp = f->value_;
+				f->value_ = n->value_;
 				n->value_ = tmp;
 				n = f;
 
@@ -459,8 +459,8 @@ private:
 			while (n->parent_ != nullptr && n->value_ < n->parent_->value_)
 			{
 				auto f = n->parent_;
-				auto tmp = n->vaule_;
-				f->value_ = n.value_;
+				auto tmp = f->value_;
+				f->value_ = n->value_;
 				n->value_ = tmp;
 				n = f;
 

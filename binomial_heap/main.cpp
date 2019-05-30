@@ -14,6 +14,7 @@ int main()
 		heap.Insert(i);
 		// heap.Print();
 	}
+	heap.Print();
 
 	auto r = heap.GetMin();
 
@@ -28,9 +29,9 @@ int main()
 
 	heap.ExtractMin();
 	heap.Print();
-	heap.ExtractMin();
+	heap.Decrease(5, 1);
 	heap.Print();
-	heap.ExtractMin();
+	heap.Remove(10);
 	heap.Print();
 
 }

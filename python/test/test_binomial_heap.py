@@ -46,6 +46,14 @@ class TestBinomialHeap(unittest.TestCase):
         heap.delete(5)
         heap.print()
 
+    def test_dup(self):
+        heap = BinomialHeap()
+        for i in [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]:
+            # print("insert: %d" % i)
+            heap.insert(i)
+        heap.print()
+        heap.delete(5)
+        heap.print()
 
 if __name__ == '__main__':
     unittest.main()

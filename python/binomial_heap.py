@@ -58,7 +58,6 @@ class BinomialNode:
 class BinomialHeap:
     def __init__(self):
         self.root = None
-        self.min = None
 
     def insert(self, value):
         node = BinomialNode(value)
@@ -75,44 +74,26 @@ class BinomialHeap:
         m = self.__find_min()
         if m is None:
             return
-        p = self.__find_pre(m)
-
-        if m is self.root:
-            self.root = m.sibling
-        else:
-            p.sibling = m.sibling
-
-        m.sibling = None
-
-        c = m.child
-
-        s = self.__reverse(c)
-        self.__union(self.root, s)
+        self.__extract_min_node(m)
 
     def decrease(self, old, new):
-        t = self.__find(old)
+        t = self.find(old)
         if t is None:
             return False
 
         t.value = new
-        while t.parent is not None:
-            f = t.parent
-            tmp = f.value
-            f.value = t.value
-            t.value = tmp
-            t = f
+        self.__bubble_up(t, False)
         return True
 
     def delete(self, key):
-        p = self.__find(key)
+        p = self.find(key)
         if p is None:
             return
+        m = self.__bubble_up(p, True)
 
-        r = self.decrease(key, -math.inf)
-        if r:
-            self.extract_min()
+        self.__extract_min_node(m)
 
-    def __find(self, value):
+    def find(self, value):
         if self.root is None:
             return None
 
@@ -144,9 +125,6 @@ class BinomialHeap:
             return []
         else:
             return self.__get_sibling(n.child)
-
-
-
 
     @staticmethod
     def __link(h1, h2):
@@ -258,4 +236,41 @@ class BinomialHeap:
 
         return root
 
+    @staticmethod
+    def __bubble_up(n, to_top):
+        if to_top:
+            while n.parent is not None:
+                f = n.parent
+                tmp = f.value
+                f.value = n.value
+                n.value = tmp
+                n = f
+        else:
+            while n.parent is not None and n.value < n.parent.value:
+                f = n.parent
+                tmp = f.value
+                f.value = n.value
+                n.value = tmp
+                n = f
+        return n
+
+    def __remove_node(self, n):
+        assert (n is not None), "remove node must not None"
+        assert (n.parent is None), "remove node must be root level"
+
+        s = self.__get_sibling(n.child)
+        for i in s:
+            i.parent = None
+
+    def __extract_min_node(self, m):
+        pre = self.__find_pre(m)
+        if m is self.root:
+            self.root = m.sibling
+        else:
+            pre.sibling = m.sibling
+        m.sibling = None
+        c = m.child
+        self.__remove_node(m.child)
+        r = self.__reverse(c)
+        self.__union(self.root, r)
 

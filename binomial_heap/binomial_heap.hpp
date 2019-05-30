@@ -8,6 +8,7 @@
 #include <cassert>
 #include <stack>
 #include <utility>
+#include <sstream>
 
 template<class T>
 class BinomialHeap
@@ -170,8 +171,9 @@ protected:
 
 		std::string Name()
 		{
-			std::string name;
-			return name + "s" + std::to_string(sn_) + "_" + std::to_string(value_);
+			std::stringstream name;
+			name << "s" << sn_ << "_" << value_;
+			return name.str();
 		}
 
 		template<class T> friend class BinomialHeap;
@@ -184,11 +186,7 @@ protected:
 		static int serial_number;
 	};
 
-
-private:
-	BinomialHeapNode* root_;
-
-	BinomialHeapNode* Find(T value)
+	virtual BinomialHeapNode* Find(T value)
 	{
 		if (root_ == nullptr)
 		{
@@ -221,9 +219,13 @@ private:
 			}
 		}
 
-		return nullptr;
-
+		return nullptr; 
 	}
+
+private:
+	BinomialHeapNode* root_;
+
+	
 
 	std::pair<BinomialHeapNode *, bool>FindMin()
 	{

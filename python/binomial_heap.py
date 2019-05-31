@@ -15,7 +15,7 @@ class BinomialNode:
         BinomialNode.serial_number += 1
 
     def name(self):
-        return "s%d_%a" % (self.sn, self.value)
+        return "s%d_%s" % (self.sn, str(self.value))
 
     def print(self):
         q = Queue()
@@ -98,7 +98,7 @@ class BinomialHeap:
             return None
 
         q = Queue()
-        s = self.__get_sibling(self.root)
+        s = self.get_sibling(self.root)
         for i in s:
             q.put(i)
 
@@ -107,24 +107,24 @@ class BinomialHeap:
             if n.value == value:
                 return n
             elif n.value < value:
-                c = self.__get_child(n)
+                c = self.get_child(n)
                 for i in c:
                     q.put(i)
         return None
 
     @staticmethod
-    def __get_sibling(n):
+    def get_sibling(n):
         r = []
         while n is not None:
             r.append(n)
             n = n.sibling
         return r
 
-    def __get_child(self, n):
+    def get_child(self, n):
         if n is None or n.child is None:
             return []
         else:
-            return self.__get_sibling(n.child)
+            return self.get_sibling(n.child)
 
     @staticmethod
     def __link(h1, h2):
@@ -258,7 +258,7 @@ class BinomialHeap:
         assert (n is not None), "remove node must not None"
         assert (n.parent is None), "remove node must be root level"
 
-        s = self.__get_sibling(n.child)
+        s = self.get_sibling(n.child)
         for i in s:
             i.parent = None
 
@@ -270,7 +270,7 @@ class BinomialHeap:
             pre.sibling = m.sibling
         m.sibling = None
         c = m.child
-        self.__remove_node(m.child)
+        self.__remove_node(m)
         r = self.__reverse(c)
         self.__union(self.root, r)
 

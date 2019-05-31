@@ -24,7 +24,7 @@ class TestBinomialHeap(unittest.TestCase):
         # heap.print()
 
         heap.delete(5)
-
+        heap.print()
         self.assertEqual(1, 1)
 
     def test_decrease(self):

@@ -8,42 +8,40 @@ class Color(Enum):
     BLACK = 2
 
 
-class Node:
-    def __init__(self, value):
-        self.left = None
-        self.right = None
-        self.parent = None
-        self.value = value
-        self.color = Color.RED
-
-    def uncle(self):
-        assert (self.parent is not None)
-        assert (self.parent.parent is not None)
-        return self.parent.sibling()
-
-    def is_left(self):
-        assert(self.parent is not None)
-        return self.parent.left == self
-
-    def is_leaf(self):
-        return self.left is None and self.right is None
-
-    def sibling(self):
-        assert(self.parent is not None)
-        if self.is_left():
-            return self.parent.right
-        else:
-            return self.parent.left
-
-
 class RedBlackTree:
+    class Node:
+        def __init__(self, value):
+            self.left = None
+            self.right = None
+            self.parent = None
+            self.value = value
+            self.color = Color.RED
+
+        def uncle(self):
+            assert (self.parent is not None)
+            assert (self.parent.parent is not None)
+            return self.parent.sibling()
+
+        def is_left(self):
+            assert (self.parent is not None)
+            return self.parent.left == self
+
+        def is_leaf(self):
+            return self.left is None and self.right is None
+
+        def sibling(self):
+            assert (self.parent is not None)
+            if self.is_left():
+                return self.parent.right
+            else:
+                return self.parent.left
 
     def __init__(self):
         self.root = None
 
     def insert(self, value):
         if self.root is None:
-            self.root = Node(value)
+            self.root = RedBlackTree.Node(value)
             self.root.color = Color.BLACK
             return
 
@@ -51,7 +49,7 @@ class RedBlackTree:
 
         if n is None:
             return
-        new = Node(value)
+        new = RedBlackTree.Node(value)
 
         if n.value > value:
             n.left = new
@@ -93,18 +91,38 @@ class RedBlackTree:
                 p = p.right
         return p
 
-    def print(self):
-        print("strict digraph Tree {")
-        q = Queue()
+    def __iter__(self):
+        stack = []
         if self.root is None:
             return
+        stack.append(self.root)
+        left_on = True
+        while len(stack) > 0:
+            p = stack.pop()
+            if p.left is not None and left_on:
+                while p is not None:
+                    stack.append(p)
+                    p = p.left
+                p = stack.pop()
+            left_on = False
+            yield p.value
+            if p.right is not None:
+                stack.append(p.right)
+                left_on = True
+
+    def print(self):
+        print("strict digraph Tree {")
+        if self.root is None:
+            print("}")
+            return
+        q = Queue()
         q.put(self.root)
         while not q.empty():
             current = q.get()
             if current is None:
                 return
 
-            print(" %d[" % current.value, end="")
+            print(" %s[" % str(current.value), end="")
             if current.color is Color.RED:
                 print("color=red]")
             else:
@@ -112,10 +130,10 @@ class RedBlackTree:
 
             if current.left is not None:
                 q.put(current.left)
-                print(" %d -> %d" % (current.value, current.left.value))
+                print(" %s -> %s" % (str(current.value), str(current.left.value)))
             if current.right is not None:
                 q.put(current.right)
-                print(" %d -> %d" % (current.value, current.right.value))
+                print(" %s -> %s" % (str(current.value), str(current.right.value)))
         print("}")
 
     @staticmethod

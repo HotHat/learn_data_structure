@@ -12,3 +12,11 @@ class GraphNode:
 class Graph:
     def add(self, start, end):
         pass
+
+    def find(self, node):
+        pass
+
+    def print(self):
+        pass
+
+

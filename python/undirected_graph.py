@@ -7,7 +7,7 @@ class Vertex:
         self.weight = weight
 
 
-class Graph:
+class UndirectedGraph:
     class GraphVertex:
         def __init__(self, start):
             self.item = start
@@ -32,13 +32,18 @@ class Graph:
     def __init__(self):
         self.node = RedBlackTree()
 
-    def add(self, start, end, weight=0):
-        g = Graph.GraphVertex(start)
+    def add(self, start, end=None, weight=None):
+        g = UndirectedGraph.GraphVertex(start)
         self.node.insert(g)
-        g2 = Graph.GraphVertex(end)
-        self.node.insert(g2)
-        p = self.node.find(g)
-        p.value.add_child(Vertex(g2.item, weight))
+        if end is not None:
+            g2 = UndirectedGraph.GraphVertex(end)
+            self.node.insert(g2)
+            # a --> b
+            p = self.node.search(g)
+            p.add_child(Vertex(g2.item, weight))
+            # b --> a
+            p = self.node.search(g2)
+            p.add_child(Vertex(g.item, weight))
 
     def find(self, node):
         pass
@@ -48,7 +53,10 @@ class Graph:
         for i in self.node:
             print(i)
             for s in i.child:
-                print("%s -- %s [label=%s]" % (str(i), str(s.value), str(s.weight)))
+                if s.weight is not None:
+                    print("%s -- %s [label=%s]" % (str(i), str(s.value), str(s.weight)))
+                else:
+                    print("%s -- %s" % (str(i), str(s.value)))
 
         print("}")
 

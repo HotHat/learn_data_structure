@@ -81,15 +81,22 @@ class RedBlackTree:
                     v = v.left
 
     def find(self, value):
-        p = self.root
-        while p is not None:
-            if p.value == value:
-                return p
-            if p.value > value:
-                p = p.left
+        s = self.root
+        while s is not None:
+            if s.value == value:
+                return s
+            if s.value > value:
+                s = s.left
             else:
-                p = p.right
-        return p
+                s = s.right
+        return s
+
+    def search(self, value):
+        s = self.find(value)
+        if s is None:
+            return None
+        else:
+            return s.value
 
     def __iter__(self):
         stack = []

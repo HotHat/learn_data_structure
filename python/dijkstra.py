@@ -35,11 +35,23 @@ class Dijkstra:
             f = self.graph.find(m.number)
             assert (f is not None), 'must find the node'
             for i in f.child:
-                self.heap.decrease(DJKNode(i.value), DJKNode(i.value, m.weight + i.weight))
+                n = m.weight + i.weight
+                p = self.heap.find(DJKNode(i.value, i.weight))
+                if p is not None:
+                    hp = p.value
+                    if n < hp.weight:
+                        hp.parent = m.number
+                        hp.weight = n
+                        self.heap.decrease(hp, hp)
             self.heap.extract_min()
 
         for i in result:
             print(i)
 
+    # print the solution
+    def show(self):
+        pass
+
+    # print the graph
     def print(self):
         self.graph.print()

@@ -3,12 +3,16 @@ from queue import Queue
 
 
 class DJKNode:
-    def __init__(self, n, w=0):
+    def __init__(self, n, w=0, parent=None):
         self.number = n
         self.weight = w
+        self.parent = parent
 
     def __str__(self):
-        return "%s_%s" % (str(self.number), str(self.weight))
+        if self.parent is not None:
+            return "%s_%s_%s" % (str(self.number), str(self.weight), str(self.parent))
+        else:
+            return "%s_%s" % (str(self.number), str(self.weight))
         # return "%d" % self.weight
 
     def __eq__(self, other):

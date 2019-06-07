@@ -8,7 +8,7 @@ class DJKNode:
         self.weight = w
 
     def __str__(self):
-        return "%d_%d" % (self.number, self.weight)
+        return "%s_%s" % (str(self.number), str(self.weight))
         # return "%d" % self.weight
 
     def __eq__(self, other):

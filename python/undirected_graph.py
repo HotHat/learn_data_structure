@@ -32,6 +32,10 @@ class UndirectedGraph:
     def __init__(self):
         self.node = RedBlackTree()
 
+    def __iter__(self):
+        for i in self.node:
+            yield i
+
     def add(self, start, end=None, weight=None):
         g = UndirectedGraph.GraphVertex(start)
         self.node.insert(g)
@@ -46,7 +50,13 @@ class UndirectedGraph:
             p.add_child(Vertex(g.item, weight))
 
     def find(self, node):
-        pass
+        n = UndirectedGraph.GraphVertex(node)
+        r = self.node.find(n)
+        if r is None:
+            return r
+        else:
+            return r.value
+
 
     def print(self):
         print("strict graph Tree {")

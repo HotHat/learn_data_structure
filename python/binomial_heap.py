@@ -70,6 +70,9 @@ class BinomialHeap:
         else:
             return None
 
+    def empty(self):
+        return self.root is None
+
     def extract_min(self):
         m = self.__find_min()
         if m is None:

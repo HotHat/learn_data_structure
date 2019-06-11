@@ -57,7 +57,6 @@ class UndirectedGraph:
         else:
             return r.value
 
-
     def print(self):
         print("strict graph Tree {")
         for i in self.node:

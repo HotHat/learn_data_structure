@@ -45,12 +45,39 @@ class Dijkstra:
                         self.heap.decrease(hp, hp)
             self.heap.extract_min()
 
-        for i in result:
-            print(i)
+        return result
+        # for i in result:
+        #     print(i)
 
     # print the solution
-    def show(self):
-        pass
+    def show(self, start):
+        result = self.solution(start)
+        ss = set()
+        print("digraph Tree {")
+        print("  subgraph directed { edge [color=red] ")
+        for i in result:
+            ss.add((i.number, i.parent))
+            if i.parent is not None:
+                print("%s -> %s [label=%s]" % (str(i.parent), str(i.number), str(i.weight)))
+
+        print(" }")
+        print("  subgraph undirected { edge [dir=none, color=blue]")
+        for i in self.graph:
+            if i.item == start:
+                print("%s [color=red]" % i.item)
+            else:
+                print(i)
+            for s in i.child:
+                # print((i.item, s.value, s.weight))
+                if (i.item, s.value) not in ss and (s.value, i.item) not in ss:
+                    if s.weight is not None:
+                        print("%s -> %s [label=%s]" % (str(i), str(s.value), str(s.weight)))
+                    else:
+                        print("%s -> %s" % (str(i), str(s.value)))
+                ss.add((i.item, s.value))
+
+        print(" }")
+        print("}")
 
     # print the graph
     def print(self):

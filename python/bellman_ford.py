@@ -1,9 +1,9 @@
-from undirected_graph import UndirectedGraph
+from directed_graph import DirectedGraph
 
 
 class BellmanFord:
     def __init__(self):
-        self.graph = UndirectedGraph()
+        self.graph = DirectedGraph()
 
     def add(self, start, to=None, weight=None):
         self.graph.add(start, to, weight)

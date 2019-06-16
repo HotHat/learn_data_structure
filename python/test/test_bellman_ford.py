@@ -1,24 +1,25 @@
 import unittest
-from bellman_ford import BellmanFord as Graph
+from bellman_ford import BellmanFord
 
 
 class TestBellmanFord(unittest.TestCase):
     def setUp(self) -> None:
-        self.graph = Graph()
-        self.graph.add('A', 'B', -1)
-        self.graph.add('A', 'C', 4)
-        self.graph.add('B', 'C', 3)
-        self.graph.add('B', 'D', 2)
-        self.graph.add('D', 'B', 1)
-        self.graph.add('D', 'C', 5)
-        self.graph.add('B', 'E', 2)
-        self.graph.add('E', 'D', -3)
+        self.bellman = BellmanFord()
+        self.bellman.add('A', 'B', -1)
+        self.bellman.add('A', 'C', 4)
+        self.bellman.add('B', 'C', 3)
+        self.bellman.add('B', 'D', 2)
+        self.bellman.add('D', 'B', 1)
+        self.bellman.add('D', 'C', 5)
+        self.bellman.add('B', 'E', 2)
+        self.bellman.add('E', 'D', -3)
 
     def test_graph(self):
-        self.graph.print()
+        self.bellman.print()
 
     def test_solution(self):
-        pass
+        ss = self.bellman.solution('A')
+        print(ss)
 
     def test_show(self):
-        pass
+        self.bellman.show('A')

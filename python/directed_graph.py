@@ -1,9 +1,6 @@
 from redblacktree import RedBlackTree
 
 
-
-
-
 class DirectedGraph:
     class DirectedGraphEdge:
         def __init__(self, value, weight):

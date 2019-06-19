@@ -23,29 +23,45 @@ class TestDepthFirstSearch(unittest.TestCase):
         self.graph.add('13', '14')
 
     def test_a(self):
+        # self.graph.print()
+        # return
         stack = []
+        call_back_stack = []
         visited = {}
         child_num = {}
+        cur_child_num = {}
         father = {}
         for i in self.graph:
             visited[i.item] = False
-            child_num[i.item] = 0
+            child_num[i.item] = len(i.child)
+            cur_child_num[i.item] = 0
 
         stack.append('1')
         visited['1'] = True
+
         while len(stack) != 0:
-            print(stack)
-            idx = stack.pop()
-            print(idx)
-            p = self.graph.find(idx)
-            for c in p.child:
-                if visited[c.value]:
-                    pass
+            p = self.graph.find(stack[-1])
+            idx = p.item
+            # print(idx)
+            while cur_child_num[idx] != child_num[idx]:
+                c_n = cur_child_num[idx]
+                n = p.child[c_n].value
+                if visited[n]:
+                    # pass
+                    cur_child_num[idx] += 1
+                    continue
                 else:
-                    child_num[idx] += 1
-                    visited[c.value] = True
-                    stack.append(c.value)
-        # print(visited)
+                    visited[n] = True
+                    stack.append(n)
+                    break
+                    # cu
+            else:
+                print(stack)
+                stack.pop()
+                # r_child_num[n] += 1
+
+        # print(father)
+        # print(call_back_stack)
         # self.graph.print()
 
 

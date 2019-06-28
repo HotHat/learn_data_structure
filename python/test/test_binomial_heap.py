@@ -55,5 +55,6 @@ class TestBinomialHeap(unittest.TestCase):
         heap.delete(5)
         heap.print()
 
+
 if __name__ == '__main__':
     unittest.main()

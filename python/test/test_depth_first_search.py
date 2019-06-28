@@ -26,6 +26,7 @@ class TestDepthFirstSearch(unittest.TestCase):
     def test_a(self):
         # self.graph.print()
         # return
+        result = []
         p_idx = 1
         stack = []
         visited = {}
@@ -94,6 +95,7 @@ class TestDepthFirstSearch(unittest.TestCase):
                 if (father[idx] is not None and articulation_map[idx]) or (
                         father[idx] is None and back_child_num[idx] > 1):
                     print("%s is articulation point" % idx)
+                    result.append(idx)
 
                 # r_child_num[n] += 1
 
@@ -101,8 +103,11 @@ class TestDepthFirstSearch(unittest.TestCase):
         # print(low)
         # print(depth)
 
-        print("current child num:")
-        print(back_child_num)
+        # print("current child num:")
+        # print(back_child_num)
+        print(result)
+        for i in result:
+            print('%s[color=red]' % i)
         # print(call_back_stack)
         # self.graph.print()
 
